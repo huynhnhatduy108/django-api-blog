@@ -12,6 +12,7 @@ urlpatterns = [
     path('info_by_id/<int:pk>', views.PostView.as_view({'get': 'get_info_by_id'}), name="info_by_id"),
     path('info_by_slug/<str:slug>', views.PostView.as_view({'get': 'get_info_by_slug'}), name="info_by_slug"),
 
+    path('list_search', views.PostAuthenticationView.as_view({'post': 'list'}),name="list" ),
     path('create', views.PostAuthenticationView.as_view({'post': 'create_post'}),name="create_post" ),
     path('update/<int:pk>', views.PostAuthenticationView.as_view({'put': 'update_post'}),kwargs={"ROLE": [ADMIN_ROLE, USER_ROLE], "TYPE_API":POST},name="update_post"),
     path('delete/<int:pk>', views.PostAuthenticationView.as_view({'delete': 'delete_post'}),kwargs={"ROLE": [ADMIN_ROLE, USER_ROLE], "TYPE_API":POST},name="delete_post"),

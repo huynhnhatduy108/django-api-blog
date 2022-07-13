@@ -1,4 +1,5 @@
 from unicodedata import category
+from urllib import request
 from wsgiref.util import request_uri
 from api.base.base_views import BaseAuthenticationView, BaseView
 from api.base.serializers import ExceptionResponseSerializer
@@ -16,6 +17,100 @@ from django.db.models import F, OuterRef, Value, CharField, Subquery, Count, Q
 
 class PostAuthenticationView(BaseAuthenticationView):   
     @extend_schema(
+            operation_id='List Post Search',
+            summary='List Post Search',
+            tags=["B. Post Search"],
+            description='List Post Search',
+            request = ListPostSerializer,
+            # parameters= PARAMETER_SEARCH_POST,
+            responses={
+                status.HTTP_200_OK: None,
+                status.HTTP_401_UNAUTHORIZED: ExceptionResponseSerializer,
+                status.HTTP_400_BAD_REQUEST: ExceptionResponseSerializer,
+            },
+            examples=[
+                # EXAMPLE_RESPONSE_TASK,
+            ]
+        )
+    def list(self, request):
+        serializer = ListPostSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        posts = Post.objects.all()
+
+        detail = 0
+        if "detail" in serializer.validated_data:
+            detail = serializer.validated_data['detail']
+
+        if "tags" in serializer.validated_data:
+            tags = serializer.validated_data['tags']
+            # posts = Post.objects.filter(post_tags)
+
+        if "categories" in serializer.validated_data:
+            categories = serializer.validated_data['categories']
+            # posts = Post.objects.filter()
+
+
+        posts = Post.objects.all().annotate( post_id =F("id"), 
+                                            parent_title =F("parent__title"), 
+                                            author_name =F("author__full_name"),
+                                            author_avatar =F("author__avatar_url"),
+                                            ).values("post_id", "parent_id", 
+                                                    "parent_title","slug", "title",
+                                                    "meta_title","content", "summary",
+                                                    "author_id", "author_name", "author_avatar",
+                                                    "published_at").order_by("-post_id")
+
+        self.paginate(posts)
+        data = self.response_paging(self.paging_list)   
+
+        if detail ==1:
+            list_post = self.paging_list
+            post_tags = PostTag.objects.filter(post__in = get_value_list(list_post, "post_id")).annotate(post_tag_id =F("id"),
+                                                                        title =F("tag__title"),
+                                                                        slug =F("tag__slug"),
+                                                                        meta_title =F("tag__meta_title"),
+                                                                        description =F("tag__description")
+                                                                        ).values("post_tag_id", "tag_id","post_id", "slug", "meta_title", "description")
+
+            post_categories = PostCategory.objects.filter(post__in=get_value_list(list_post, "post_id")).annotate(post_category_id =F("id"),
+                                                                        title =F("category__title"),
+                                                                        slug =F("category__slug"),
+                                                                        meta_title =F("category__meta_title"),
+                                                                        description =F("category__description")
+                                                                        ).values("post_category_id", "post_id", "category_id", "slug", "meta_title", "description")
+            
+            for post in list_post:
+                post["tags"] =[]
+                post["categories"] =[]
+                for post_tag in post_tags:
+                    if post["post_id"] == post_tag["post_id"]:
+                        post["tags"].append({
+                                            "tag_id": post_tag["tag_id"],
+                                            "post_tag_id":post_tag["post_tag_id"],
+                                            "slug": post_tag["slug"],
+                                            "meta_title": post_tag["meta_title"],
+                                            "description": post_tag["description"],
+                                             })
+                for post_category in post_categories:
+                    if post["post_id"] == post_category["post_id"]:
+                        post["categories"].append({
+                                            "category_id": post_category["category_id"],
+                                            "post_category_id": post_category["post_category_id"],
+                                            "slug": post_category["slug"],
+                                            "meta_title": post_category["meta_title"],
+                                            "description": post_category["description"],
+                                             })     
+
+            data = self.response_paging(list_post)   
+        
+        result ={
+            "data":data,
+            "mess":"Get list Post success!"
+        }
+        return Response(result, status=status.HTTP_200_OK)
+
+    @extend_schema(
             operation_id='Create Post',
             summary='Create Post',
             tags=["B. Post"],
@@ -31,8 +126,6 @@ class PostAuthenticationView(BaseAuthenticationView):
                 # EXAMPLE_RESPONSE_TASK,
             ]
         )
-
-
     def create_post(self, request):
         serializer = CreatePostSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
