@@ -94,7 +94,7 @@ class CreatePostSerializer(serializers.Serializer):
                 published_at = '{} 00:00:00'.format(published_at, '%d/%m/%Y %H:%M:%S')
                 published_at = datetime.strptime(published_at, '%d/%m/%Y %H:%M:%S')
             except:
-                raise serializers.ValidationError("start_date type is date %d/%m/%Y")
+                raise serializers.ValidationError("published_at type is date %d/%m/%Y")
             data["published_at"] = published_at
         
         if "tags" in data:
@@ -115,11 +115,6 @@ class CreatePostSerializer(serializers.Serializer):
                 if len(list_category) != len(categories):
                     raise serializers.ValidationError("some category is not exist or duplicate!")
         
-        if "thumbnail" in data:
-            thumbnail = data["thumbnail"]
-            if not thumbnail:
-                raise serializers.ValidationError("thumbnail is reqiued!")
-
         return data
 
 class UpdatePostSerializer(serializers.Serializer):
@@ -151,7 +146,7 @@ class UpdatePostSerializer(serializers.Serializer):
                 published_at = '{} 00:00:00'.format(published_at, '%d/%m/%Y %H:%M:%S')
                 published_at = datetime.strptime(published_at, '%d/%m/%Y %H:%M:%S')
             except:
-                raise serializers.ValidationError("start_date type is date %d/%m/%Y")
+                raise serializers.ValidationError("published_at type is date %d/%m/%Y")
             data["published_at"] = published_at
         
         if "tags" in data:
@@ -172,10 +167,5 @@ class UpdatePostSerializer(serializers.Serializer):
                 list_category = Category.objects.filter(id__in = categories)
                 if len(list_category) != len(categories):
                     raise serializers.ValidationError("some category is not exist or duplicate!")
-        
-        if "thumbnail" in data:
-            thumbnail = data["thumbnail"]
-            if not thumbnail:
-                raise serializers.ValidationError("thumbnail is reqiued!")
             
         return data

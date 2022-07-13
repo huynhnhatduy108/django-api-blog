@@ -40,11 +40,6 @@ class TokenAuthentication(BaseAuthentication):
 
             setattr(request, 'user', user)
             return user, None
-        # except:
-        #     raise exceptions.AuthenticationFailed({
-        #         'error_code': "TOKEN_NOT_VALID",
-        #         'description': "TOKEN_NOT_VALID"
-        #     })
 
 
     @staticmethod
@@ -57,7 +52,6 @@ class TokenAuthentication(BaseAuthentication):
 
     @staticmethod
     def check_user_and_token(objects_token, receive_token):
-        print("receive_token", receive_token)
         try:
             user = User.objects.filter(id=objects_token["user_id"]).values("id","username","full_name", "email", "address","role", "avatar_url", "refresh_token", "access_token").first()
             if not user or user['access_token']!=receive_token:

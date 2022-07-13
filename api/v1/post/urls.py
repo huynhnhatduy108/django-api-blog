@@ -8,7 +8,6 @@ urlpatterns = [
     path('list_by_tag/<int:tag_id>', views.PostView.as_view({'get': 'get_list_post_by_tag'}), name="get_list_post_by_tag"),
     path('list_by_category/<int:category_id>', views.PostView.as_view({'get': 'get_list_post_by_category'}), name="get_list_post_by_category"),
     path('search_post_by_keyword/<str:keyword>', views.PostView.as_view({'get': 'search_post_by_keyword'}), name="search_post_by_keyword"),
-    # path('search_post', views.PostView.as_view({'get': 'search_post'}), name="search_post"),
 
     path('info_by_id/<int:pk>', views.PostView.as_view({'get': 'get_info_by_id'}), name="info_by_id"),
     path('info_by_slug/<str:slug>', views.PostView.as_view({'get': 'get_info_by_slug'}), name="info_by_slug"),

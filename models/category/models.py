@@ -7,7 +7,7 @@ class Category(models.Model):
     title = models.CharField(db_column='title', blank=True, null=True, max_length=75)
     slug = models.CharField(db_column='slug', blank=True, null=True, max_length=100)
     meta_title = models.CharField(db_column='meta_title', blank=True, null=True, max_length=100)
-    thumbnail = models.CharField(db_column='thumbnail', blank=True, null=True, max_length=100)
+    thumbnail = models.CharField(db_column='thumbnail', blank=True, null=True, max_length=500)
     description = models.TextField(db_column='description', blank=True, null=True)
     
     created_at = models.DateTimeField(db_column='created_at', auto_now_add=True, blank=True, null=True)

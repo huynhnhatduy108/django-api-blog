@@ -103,7 +103,11 @@ class CategoryAuthenticationView(BaseAuthenticationView):
         if "description" in serializer.validated_data:
             description = serializer.validated_data['description']
 
-        category = Category.objects.create(parent = parent, title= title, meta_title = meta_title, description = description, slug = slug)
+        thumbnail =None
+        if "thumbnail" in serializer.validated_data:
+            thumbnail = serializer.validated_data['thumbnail']
+
+        category = Category.objects.create(parent = parent, title= title, meta_title = meta_title, description = description, thumbnail = thumbnail,slug = slug)
 
         result = { "mess": "Create category success!", 
                    "data":{"id":category.id}}
@@ -156,6 +160,10 @@ class CategoryAuthenticationView(BaseAuthenticationView):
         if "description" in serializer.validated_data:
             description = serializer.validated_data['description']
             category.description = description
+
+        if "thumbnail" in serializer.validated_data:
+            thumbnail = serializer.validated_data['thumbnail']
+            category.thumbnail = thumbnail
         
         category.save()
 
