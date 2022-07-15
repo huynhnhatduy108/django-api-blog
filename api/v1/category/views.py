@@ -1,7 +1,8 @@
 from api.base.base_views import BaseAuthenticationView, BaseView
 from api.base.serializers import ExceptionResponseSerializer
 from api.functions.function import gen_random_string, gen_slug
-from api.v1.category.serializers import CreateCategorySerializer, UpdateCategorySerializer
+from api.v1.category.schemas import PARAMETER_SEARCH_CATEGORY
+from api.v1.category.serializers import CreateCategorySerializer, SearchCategorySerializer, UpdateCategorySerializer
 from models.category.models import Category
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
@@ -26,13 +27,55 @@ class CategoryView(BaseView):
         ]
     )
     def get_list_category(self, request):
-        categorys = Category.objects.all().values("id","slug", "title", "meta_title","description")
+        categorys = Category.objects.all().values("id","slug", "title", "meta_title","description", "thumbnail")
         result ={
             "data":list(categorys),
             "mess":"Get list category success!"
         }
         return Response(result, status=status.HTTP_200_OK)
+    
+    @extend_schema(
+            operation_id='Search list category',
+            summary='Search list category',
+            tags=["E. category"],
+            description='Search list category',
+            parameters=PARAMETER_SEARCH_CATEGORY,
+            responses={
+                status.HTTP_200_OK: None,
+                status.HTTP_401_UNAUTHORIZED:ExceptionResponseSerializer,
+                status.HTTP_400_BAD_REQUEST: ExceptionResponseSerializer,
+            },
+            examples=[
+                # EXAMPLE_RESPONSE_TASK,
+            ]
+        )
+    def search_list_category(self, request):
+        serializer = SearchCategorySerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
 
+        categorys = Category.objects.all()
+
+        keyword = None
+        if "keyword" in serializer.validated_data:
+            keyword = serializer.validated_data['keyword']
+
+        if keyword:
+            categorys = categorys.filter(Q(meta_title__icontains= keyword)| 
+                                Q(description__icontains= keyword)|Q(title__icontains= keyword))
+
+        categorys = categorys.values("id","slug", "title", "meta_title","description", "thumbnail")
+        
+        self.paginate(categorys)
+        data = self.response_paging(self.paging_list)   
+
+        result ={
+            "data":data,
+            "mess":"Get list category success!"
+        }
+        return Response(result, status=status.HTTP_200_OK)
+
+class CategoryAuthenticationView(BaseAuthenticationView):
+    
     @extend_schema(
         operation_id='Get info category',
         summary='Get info category',
@@ -49,15 +92,13 @@ class CategoryView(BaseView):
         ]
     )
     def get_info(self, request, pk):
-        category = Category.objects.filter(pk=pk).values("id","slug", "title", "meta_title","description").first()
+        category = Category.objects.filter(pk=pk).values("id","slug", "title", "meta_title","description", "thumbnail").first()
         result ={
             "data":category,
             "mess":"Get info category success!"
         }
         return Response(result, status=status.HTTP_200_OK)
 
-
-class CategoryAuthenticationView(BaseAuthenticationView):
     @extend_schema(
             operation_id='Create category',
             summary='Create category',

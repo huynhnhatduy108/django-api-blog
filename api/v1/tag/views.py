@@ -1,7 +1,8 @@
 from api.base.base_views import BaseAuthenticationView, BaseView
 from api.base.serializers import ExceptionResponseSerializer
 from api.functions.function import gen_random_string, gen_slug
-from api.v1.tag.serializers import CreateTagSerializer, UpdateTagSerializer
+from api.v1.tag.schemas import PARAMETER_SEARCH_TAG
+from api.v1.tag.serializers import CreateTagSerializer, SearchTagSerializer, UpdateTagSerializer
 from models.tag.models import Tag
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
@@ -15,7 +16,7 @@ class TagView(BaseView):
         summary='Get list tag',
         tags=["D. tag"],
         description='Get list tag',
-        parameters=None,
+        # parameters=PARAMETER_SEARCH_TAG,
         responses={
             status.HTTP_200_OK: None,
             status.HTTP_401_UNAUTHORIZED:ExceptionResponseSerializer,
@@ -33,6 +34,46 @@ class TagView(BaseView):
         }
         return Response(result, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        operation_id='Search list tag',
+        summary='Search list tag',
+        tags=["D. tag"],
+        description='Search list tag',
+        parameters=PARAMETER_SEARCH_TAG,
+        responses={
+            status.HTTP_200_OK: None,
+            status.HTTP_401_UNAUTHORIZED:ExceptionResponseSerializer,
+            status.HTTP_400_BAD_REQUEST: ExceptionResponseSerializer,
+        },
+        examples=[
+            # EXAMPLE_RESPONSE_TASK,
+        ]
+    )
+    def search_list_tag(self, request):
+        serializer = SearchTagSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        tags = Tag.objects.all()
+        keyword = None
+        if "keyword" in serializer.validated_data:
+            keyword = serializer.validated_data['keyword']
+            if keyword:
+                tags = tags.filter(Q(meta_title__icontains= keyword)| 
+                                    Q(description__icontains= keyword)|Q(title__icontains= keyword))
+
+        tags = tags.values("id","slug", "title", "meta_title","description")
+
+        self.paginate(tags)
+        data = self.response_paging(self.paging_list)   
+        
+        result ={
+            "data":data,
+            "mess":"Get list tag success!"
+        }
+        return Response(result, status=status.HTTP_200_OK)
+
+class TagAuthenticationView(BaseAuthenticationView): 
+   
     @extend_schema(
         operation_id='Get info tag',
         summary='Get info tag',
@@ -96,8 +137,6 @@ class TagView(BaseView):
                    "data":{"id":tag.id}}
         return Response(result, status=status.HTTP_201_CREATED)
 
-
-class TagAuthenticationView(BaseAuthenticationView):   
     @extend_schema(
             operation_id='Update tag',
             summary='Update tag',
@@ -144,7 +183,6 @@ class TagAuthenticationView(BaseAuthenticationView):
         return Response(result, status=status.HTTP_201_CREATED)
 
        
-
     @extend_schema(
             operation_id='Delete tag',
             summary='Delete tag',

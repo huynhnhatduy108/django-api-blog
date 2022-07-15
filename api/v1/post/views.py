@@ -333,7 +333,7 @@ class PostView(BaseView):
                                                     "parent_title","slug", "title",
                                                     "meta_title","content", "summary",
                                                     "author_id", "author_name", "author_avatar",
-                                                    "published_at").order_by("-post_id")
+                                                    "published_at", "thumbnail").order_by("-post_id")
 
         self.paginate(posts)
         data = self.response_paging(self.paging_list)   
@@ -351,8 +351,9 @@ class PostView(BaseView):
                                                                         title =F("category__title"),
                                                                         slug =F("category__slug"),
                                                                         meta_title =F("category__meta_title"),
-                                                                        description =F("category__description")
-                                                                        ).values("post_category_id", "post_id", "category_id", "slug", "meta_title", "description")
+                                                                        description =F("category__description"),
+                                                                        thumbnail =F("category__thumbnail")
+                                                                        ).values("post_category_id", "post_id", "category_id", "slug", "meta_title", "description", "thumbnail")
             
             for post in list_post:
                 post["tags"] =[]
@@ -416,7 +417,7 @@ class PostView(BaseView):
                                                                             "parent_title","slug", "title",
                                                                             "meta_title","content", "summary",
                                                                             "author_id", "author_name", "author_avatar",
-                                                                            "published_at").order_by("-post_id")
+                                                                            "published_at","thumbnail").order_by("-post_id")
 
         self.paginate(posts)
         data = self.response_paging(self.paging_list)  
@@ -434,8 +435,9 @@ class PostView(BaseView):
                                                                         title =F("category__title"),
                                                                         slug =F("category__slug"),
                                                                         meta_title =F("category__meta_title"),
-                                                                        description =F("category__description")
-                                                                        ).values("post_category_id", "post_id", "category_id", "slug", "meta_title", "description")
+                                                                        description =F("category__description"),
+                                                                        thumbnail =F("category__thumbnail")                                                                        
+                                                                        ).values("post_category_id", "post_id", "category_id", "slug", "meta_title", "description","thumbnail")
             
             for post in list_post:
                 post["tags"] =[]
@@ -505,7 +507,7 @@ class PostView(BaseView):
                                                                         "parent_title","slug", "title",
                                                                         "meta_title","content", "summary",
                                                                         "author_id", "author_name", "author_avatar",
-                                                                        "published_at").order_by("-post_id")
+                                                                        "published_at","thumbnail").order_by("-post_id")
 
         self.paginate(posts)
         data = self.response_paging(self.paging_list)  
@@ -523,8 +525,9 @@ class PostView(BaseView):
                                                                         title =F("category__title"),
                                                                         slug =F("category__slug"),
                                                                         meta_title =F("category__meta_title"),
-                                                                        description =F("category__description")
-                                                                        ).values("post_category_id", "post_id", "category_id", "slug", "meta_title", "description")
+                                                                        description =F("category__description"),
+                                                                        thumbnail =F("category__thumbnail")                                                                                                                                               
+                                                                        ).values("post_category_id", "post_id", "category_id", "slug", "meta_title", "description","thumbnail")
 
             for post in list_post:
                 post["tags"] =[]
@@ -587,6 +590,7 @@ class PostView(BaseView):
                                                                             meta_title = F("post__meta_title"), 
                                                                             content = F("post__content"), 
                                                                             summary = F("post__summary"), 
+                                                                            thumbnail = F("post__thumbnail"), 
                                                                             published_at = F("post__parent__title"),
                                                                             author_id = F("post__author_id"),
                                                                             author_name = F("post__author__full_name"),
@@ -613,8 +617,9 @@ class PostView(BaseView):
                                                                         title =F("category__title"),
                                                                         slug =F("category__slug"),
                                                                         meta_title =F("category__meta_title"),
-                                                                        description =F("category__description")
-                                                                        ).values("post_category_id", "post_id", "category_id", "slug", "meta_title", "description")
+                                                                        description =F("category__description"),
+                                                                        thumbnail =F("category__thumbnail")                                                                                                                                               
+                                                                        ).values("post_category_id", "post_id", "category_id", "slug", "meta_title", "description", "thumbnail")
 
             for post in list_post:
                 post["tags"] =[]
@@ -671,7 +676,7 @@ class PostView(BaseView):
                                                             "parent_title","slug", "title",
                                                             "meta_title","content", "summary",
                                                             "author_id", "author_name", "author_avatar",
-                                                            "published_at").first()
+                                                            "published_at",'thumbnail').first()
         
         if not post:
             return Response({"mess": "post do not exist!"}, status=status.HTTP_400_BAD_REQUEST)  
@@ -687,8 +692,9 @@ class PostView(BaseView):
                                                                         title =F("category__title"),
                                                                         slug =F("category__slug"),
                                                                         meta_title =F("category__meta_title"),
-                                                                        description =F("category__description")
-                                                                        ).values("post_category_id", "category_id", "slug", "meta_title", "description")
+                                                                        description =F("category__description"),
+                                                                        thumbnail =F("category__thumbnail")                                                                                                                                               
+                                                                        ).values("post_category_id", "category_id", "slug", "meta_title", "description", "thumbnail")
 
         post["tags"] = list(post_tags)
         post["categories"] = list(post_categories)
@@ -741,8 +747,9 @@ class PostView(BaseView):
                                                                             title =F("category__title"),
                                                                             slug =F("category__slug"),
                                                                             meta_title =F("category__meta_title"),
-                                                                            description =F("category__description")
-                                                                            ).values("post_category_id", "category_id", "slug", "meta_title", "description")
+                                                                            description =F("category__description"),
+                                                                            thumbnail =F("category__thumbnail")                                                                                                                                               
+                                                                            ).values("post_category_id", "category_id", "slug", "meta_title", "description","thumbnail")
 
         post["tags"] = list(post_tags)
         post["categories"] = list(post_categories)
@@ -806,8 +813,9 @@ class PostView(BaseView):
                                                                         title =F("category__title"),
                                                                         slug =F("category__slug"),
                                                                         meta_title =F("category__meta_title"),
-                                                                        description =F("category__description")
-                                                                        ).values("post_category_id", "post_id", "category_id", "slug", "meta_title", "description")
+                                                                        description =F("category__description"),
+                                                                        thumbnail =F("category__thumbnail")                                                                                                                                               
+                                                                        ).values("post_category_id", "post_id", "category_id", "slug", "meta_title", "description","thumbnail")
 
             for post in list_post:
                 post["tags"] =[]
