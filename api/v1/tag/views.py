@@ -27,7 +27,7 @@ class TagView(BaseView):
         ]
     )
     def get_list_tag(self, request):
-        tags = Tag.objects.all().values("id","slug", "title", "meta_title","description")
+        tags = Tag.objects.all().values("id","slug", "title", "meta_title","description").order_by("-id")
         result ={
             "data":list(tags),
             "mess":"Get list tag success!"
@@ -61,7 +61,7 @@ class TagView(BaseView):
                 tags = tags.filter(Q(meta_title__icontains= keyword)| 
                                     Q(description__icontains= keyword)|Q(title__icontains= keyword))
 
-        tags = tags.values("id","slug", "title", "meta_title","description")
+        tags = tags.values("id","slug", "title", "meta_title","description").order_by("-id")
 
         self.paginate(tags)
         data = self.response_paging(self.paging_list)   

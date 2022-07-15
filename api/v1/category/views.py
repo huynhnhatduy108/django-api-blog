@@ -27,7 +27,7 @@ class CategoryView(BaseView):
         ]
     )
     def get_list_category(self, request):
-        categorys = Category.objects.all().values("id","slug", "title", "meta_title","description", "thumbnail")
+        categorys = Category.objects.all().values("id","slug", "title", "meta_title","description", "thumbnail").order_by("-id")
         result ={
             "data":list(categorys),
             "mess":"Get list category success!"
@@ -63,7 +63,7 @@ class CategoryView(BaseView):
             categorys = categorys.filter(Q(meta_title__icontains= keyword)| 
                                 Q(description__icontains= keyword)|Q(title__icontains= keyword))
 
-        categorys = categorys.values("id","slug", "title", "meta_title","description", "thumbnail")
+        categorys = categorys.values("id","slug", "title", "meta_title","description", "thumbnail").order_by("-id")
         
         self.paginate(categorys)
         data = self.response_paging(self.paging_list)   
