@@ -197,11 +197,11 @@ class CategoryAuthenticationView(BaseAuthenticationView):
         if "meta_title" in serializer.validated_data:
             meta_title = serializer.validated_data['meta_title']
             category.meta_title = meta_title
-
+      
         if "description" in serializer.validated_data:
             description = serializer.validated_data['description']
             category.description = description
-
+     
         if "thumbnail" in serializer.validated_data:
             thumbnail = serializer.validated_data['thumbnail']
             category.thumbnail = thumbnail

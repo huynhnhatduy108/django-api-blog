@@ -1,13 +1,14 @@
 from api.base.base_views import BaseAuthenticationView, BaseView
 from api.base.serializers import ExceptionResponseSerializer
 from api.functions.function import gen_hash_password
+from api.v1.user.schemas import PARAMETER_SEARCH_USER
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from django.db.models import F, OuterRef, Value, CharField, Subquery, Count, Q
 from models.user.models import User
-from api.v1.user.serializers import CreateUserSerializer, UpdateAvatarUserSerializer, UpdateUserSerializer
+from api.v1.user.serializers import CreateUserSerializer, SearchUserSerializer, UpdateAvatarUserSerializer, UpdateUserSerializer
 
 class UserView(BaseView):   
     pass
@@ -18,7 +19,7 @@ class UserAuthenticationView(BaseAuthenticationView):
         summary='Get list user',
         tags=["A. user"],
         description='Get list user',
-        parameters=None,
+        parameters=PARAMETER_SEARCH_USER,
         responses={
             status.HTTP_200_OK: None,
             status.HTTP_401_UNAUTHORIZED:ExceptionResponseSerializer,
@@ -29,14 +30,29 @@ class UserAuthenticationView(BaseAuthenticationView):
         ]
     )
     def get_list_user(self, request):
-        users = User.objects.all().values("id","username","full_name",
+        serializer = SearchUserSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        users = User.objects.all()
+        keyword = None
+        if "keyword" in serializer.validated_data:
+            keyword = serializer.validated_data['keyword']
+
+        if keyword:
+            users = users.filter(Q(email__icontains= keyword)| 
+                                Q(username__icontains= keyword)|Q(full_name__icontains= keyword))
+
+        users = users.values("id","username","full_name",
                                         "role", "email", "address", 
-                                        "phone", "avatar_url" ,"password",
+                                        "phone", "avatar_url",
                                         "avatar_provider","c_provider",
-                                        "refresh_token","access_token")
+                                        "refresh_token","access_token").order_by("-id")
+
+        self.paginate(users)
+        data = self.response_paging(self.paging_list)
 
         result ={
-            "data":list(users),
+            "data":data,
             "mess":"Get list user success!"
         }
         return Response(result, status=status.HTTP_200_OK)
@@ -57,9 +73,9 @@ class UserAuthenticationView(BaseAuthenticationView):
         ]
     )
     def get_info(self, request, pk):
-        user = User.objects.filter(pk=pk).values("id", "username","full_name", 
+        user = User.objects.filter(pk=pk).values("id", "username","full_name", "role",
                                                 "email", "address", "avatar_provider",
-                                                "c_provider", "phone", "avatar_url","password").first()
+                                                "c_provider", "phone", "avatar_url").first()
         result ={
             "data":user,
             "mess":"Get info user success!"
@@ -188,6 +204,10 @@ class UserAuthenticationView(BaseAuthenticationView):
             role = serializer.validated_data['role']
             user.role = role
         
+        if "avatar_url" in serializer.validated_data:
+            avatar_url = serializer.validated_data['avatar_url']
+            user.avatar_url = avatar_url
+
         user.save()
         result = {"mess": "Update user success!","data":None}
         return Response(result, status=status.HTTP_200_OK)

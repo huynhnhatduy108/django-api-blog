@@ -1,4 +1,3 @@
-from tkinter.messagebox import NO
 from models.category.models import Category
 from models.post.models import Post
 from models.tag.models import Tag
@@ -8,18 +7,43 @@ from datetime import datetime
 
 class ListPostSerializer(serializers.Serializer):
     detail = serializers.IntegerField(help_text="Detail tags and categories of post",required=False,allow_null=True)
+    pagination = serializers.IntegerField(help_text="Pagination of post",required=False,allow_null=True)
+    keyword = serializers.CharField(help_text="keyword of post",required=False,allow_null=True, allow_blank=True)
+    tags = serializers.ListField(child=serializers.IntegerField(help_text="list tags of Post"),allow_null=True,required=False)
+    categories = serializers.ListField(child=serializers.IntegerField(help_text="list category of Post"), allow_null=True,required=False)
+    author = serializers.IntegerField(help_text="Author of post",required=False,allow_null=True)
 
     @staticmethod
     def validate(data):
+        print("data", data)
         error = []
         if "detail" in data:
             detail = data["detail"]
             if detail not in [0,1]:
                 raise serializers.ValidationError("detail must be in [0,1]!")
+
+        if "tags" in data:
+            tags = data["tags"]
+            if not isinstance(tags, list):
+                raise serializers.ValidationError("tags must be array []!")
+            if len(tags):
+                list_tag = Tag.objects.filter(id__in = tags)
+                if len(list_tag) != len(tags):
+                    raise serializers.ValidationError("some tag is not exist!")
+
+        if "categories" in data:
+            categories = data["categories"]
+            if not isinstance(categories, list):
+                raise serializers.ValidationError("categories must be array []!")
+            if len(categories):
+                list_category = Category.objects.filter(id__in = categories)
+                if len(list_category) != len(categories):
+                    raise serializers.ValidationError("some category is not exist!")
+
         return data
 
 class ListPostByAuthorSerializer(serializers.Serializer):
-    title = serializers.CharField(help_text="Detail tags and categories of post",required=False,allow_null=True)
+    detail = serializers.IntegerField(help_text="Detail tags and categories of post",required=False,allow_null=True)
 
     @staticmethod
     def validate(data):

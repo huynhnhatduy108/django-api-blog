@@ -3,6 +3,13 @@ from config.contanst import ROLE_TYPE
 from models.user.models import User
 from rest_framework import serializers
 
+
+class SearchUserSerializer(serializers.Serializer):
+    keyword = serializers.CharField(help_text="Username, email of user",required=False,allow_null=True, allow_blank=True,)
+    @staticmethod
+    def validate(data):
+        return data
+
 class CreateUserSerializer(serializers.Serializer):
     username =  serializers.CharField(help_text="`username` of User ",allow_null=True,allow_blank=True,required=True)
     full_name =  serializers.CharField(help_text="`full_name` of User ",allow_null=True,allow_blank=True,required=False)
@@ -56,6 +63,7 @@ class UpdateUserSerializer(serializers.Serializer):
     intro = serializers.CharField(help_text="`intro` of User ",allow_null=True,allow_blank=True,required=False)
     profile =  serializers.CharField(help_text="`profile` of User ",allow_null=True,allow_blank=True,required=False)
     role =  serializers.IntegerField(help_text="`role` of User ",allow_null=True,required=False)
+    avatar_url =  serializers.CharField(help_text="`avatar_url` of User ",allow_null=True,allow_blank=True,required=False)
 
     @staticmethod
     def validate(data):

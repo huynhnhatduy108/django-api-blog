@@ -4,7 +4,7 @@ from wsgiref.util import request_uri
 from api.base.base_views import BaseAuthenticationView, BaseView
 from api.base.serializers import ExceptionResponseSerializer
 from api.functions.function import compare_old_to_new_list, gen_slug_radom_string, get_value_list
-from api.v1.post.schemas import PARAMETER_SEARCH_POST, PARAMETER_SEARCH_POST_BY_AUTHOR, PARAMETER_SEARCH_POST_BY_CATEGORY, PARAMETER_SEARCH_POST_BY_TAG
+from api.v1.post.schemas import PARAMETER_LIST_POST, PARAMETER_SEARCH_POST_BY_AUTHOR, PARAMETER_SEARCH_POST_BY_CATEGORY, PARAMETER_SEARCH_POST_BY_TAG
 from api.v1.post.serializers import CreatePostSerializer, ListPostByAuthorSerializer, ListPostByCategorySerializer, ListPostByTagSerializer, ListPostSerializer, SearchPostByTitleSerializer, UpdatePostSerializer
 from models.category.models import Category
 from models.post.models import Post, PostCategory, PostMeta, PostTag
@@ -306,7 +306,7 @@ class PostView(BaseView):
         summary='Get list Post',
         tags=["B. Post"],
         description='Get list Post',
-        parameters= PARAMETER_SEARCH_POST,
+        parameters= PARAMETER_LIST_POST,
         responses={
             status.HTTP_200_OK: None,
             status.HTTP_401_UNAUTHORIZED: ExceptionResponseSerializer,
@@ -321,19 +321,37 @@ class PostView(BaseView):
         serializer = ListPostSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
+        posts = Post.objects.all()
+        print("serializer.validated_data",serializer.validated_data)
         detail = 0
-        if "detail" in request.query_params:
+        if "detail" in serializer.validated_data:
             detail = serializer.validated_data['detail']
+        
+        keyword = None
+        if "detail" in serializer.validated_data:
+            detail = serializer.validated_data['detail'] 
+        
+        tags = None
+        if "tags" in serializer.validated_data:
+            tags = serializer.validated_data['tags']
 
-        posts = Post.objects.all().annotate( post_id =F("id"), 
-                                            parent_title =F("parent__title"), 
-                                            author_name =F("author__full_name"),
-                                            author_avatar =F("author__avatar_url"),
-                                            ).values("post_id", "parent_id", 
-                                                    "parent_title","slug", "title",
-                                                    "meta_title","content", "summary",
-                                                    "author_id", "author_name", "author_avatar",
-                                                    "published_at", "thumbnail").order_by("-post_id")
+        tags = None
+        if "tags" in serializer.validated_data:
+            tags = serializer.validated_data['tags']  
+
+        author = None
+        if "author" in serializer.validated_data:
+            author = serializer.validated_data['author'] 
+
+        posts = posts.annotate( post_id =F("id"), 
+                                parent_title =F("parent__title"), 
+                                author_name =F("author__full_name"),
+                                author_avatar =F("author__avatar_url"),
+                                ).values("post_id", "parent_id", 
+                                        "parent_title","slug", "title",
+                                        "meta_title","content", "summary",
+                                        "author_id", "author_name", "author_avatar",
+                                        "published_at", "thumbnail").order_by("-post_id")
 
         self.paginate(posts)
         data = self.response_paging(self.paging_list)   

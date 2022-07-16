@@ -1,8 +1,14 @@
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiExample, OpenApiParameter
 
-PARAMETER_SEARCH_POST = [
+PARAMETER_LIST_POST = [
     OpenApiParameter(name="detail", type=OpenApiTypes.STR, description="Detail tags and categories of post"),
+    OpenApiParameter(name="pagination", type=OpenApiTypes.STR, description="pagination of post"),
+    OpenApiParameter(name="keyword", type=OpenApiTypes.STR, description="keyword search of post"),
+    OpenApiParameter(name="tags", type={'type': 'array', 'items': {'type': 'number'}}, description="tags search of post"),
+    OpenApiParameter(name="categories", type={'type': 'array', 'items': {'type': 'number'}}, description="categories search of post"),
+    OpenApiParameter(name="author", type=OpenApiTypes.STR, description="author of post"),
+
     OpenApiParameter(name="limit", type=OpenApiTypes.STR, description="Giới hạn `số dòng`"),
     OpenApiParameter(name="page", type=OpenApiTypes.STR, description="Giới hạn `số trang`")
 ]
