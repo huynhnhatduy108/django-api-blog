@@ -373,7 +373,7 @@ class PostView(BaseView):
                                                                         slug =F("tag__slug"),
                                                                         meta_title =F("tag__meta_title"),
                                                                         description =F("tag__description")
-                                                                        ).values("post_tag_id", "tag_id","post_id", "slug", "meta_title", "description")
+                                                                        ).values("post_tag_id", "tag_id","post_id", "title","slug", "meta_title", "description")
 
             post_categories = PostCategory.objects.filter(post__in=get_value_list(list_post, "post_id")).annotate(post_category_id =F("id"),
                                                                         title =F("category__title"),
@@ -381,7 +381,7 @@ class PostView(BaseView):
                                                                         meta_title =F("category__meta_title"),
                                                                         description =F("category__description"),
                                                                         thumbnail =F("category__thumbnail")
-                                                                        ).values("post_category_id", "post_id", "category_id", "slug", "meta_title", "description", "thumbnail")
+                                                                        ).values("post_category_id", "post_id","title", "category_id", "slug", "meta_title", "description", "thumbnail")
             
             for post in list_post:
                 post["tags"] =[]
@@ -392,6 +392,7 @@ class PostView(BaseView):
                                             "tag_id": post_tag["tag_id"],
                                             "post_tag_id":post_tag["post_tag_id"],
                                             "slug": post_tag["slug"],
+                                            "title": post_tag["title"],
                                             "meta_title": post_tag["meta_title"],
                                             "description": post_tag["description"],
                                              })
@@ -401,6 +402,7 @@ class PostView(BaseView):
                                             "category_id": post_category["category_id"],
                                             "post_category_id": post_category["post_category_id"],
                                             "slug": post_category["slug"],
+                                            "title": post_category["title"],
                                             "meta_title": post_category["meta_title"],
                                             "description": post_category["description"],
                                              })     
