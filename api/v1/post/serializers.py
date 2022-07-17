@@ -161,7 +161,7 @@ class UpdatePostSerializer(serializers.Serializer):
     @staticmethod
     def validate(data):
         error = []
-
+        
         if "parent" in data:
             parent = data["parent"]
             if parent is not None:
@@ -183,9 +183,9 @@ class UpdatePostSerializer(serializers.Serializer):
             if not isinstance(tags, list):
                 raise serializers.ValidationError("tags must be array []!")
             if len(tags):
-                list_tags = Category.objects.filter(id__in = tags)
+                list_tags = Tag.objects.filter(id__in = tags)
                 if len(list_tags) != len(tags):
-                    raise serializers.ValidationError("some category is not exist or duplicate!")
+                    raise serializers.ValidationError("some tags is not exist or duplicate!")
                 
            
         if "categories" in data:
