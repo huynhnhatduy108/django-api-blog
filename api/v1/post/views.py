@@ -322,26 +322,36 @@ class PostView(BaseView):
         serializer.is_valid(raise_exception=True)
 
         posts = Post.objects.all()
-        print("serializer.validated_data",serializer.validated_data)
+
         detail = 0
         if "detail" in serializer.validated_data:
             detail = serializer.validated_data['detail']
+
+        is_pagination = 1
+        if "is_pagination" in serializer.validated_data:
+            is_pagination = serializer.validated_data['is_pagination']
         
         keyword = None
-        if "detail" in serializer.validated_data:
-            detail = serializer.validated_data['detail'] 
+        if "keyword" in serializer.validated_data:
+            keyword = serializer.validated_data['keyword'] 
+            posts = posts.filter(Q(title__icontains= keyword)|Q(content__icontains= keyword))
         
-        tags = None
+        tags = []
         if "tags" in serializer.validated_data:
             tags = serializer.validated_data['tags']
+            if len(tags):
+                posts = posts.filter(post_tag__in = tags)
 
-        tags = None
-        if "tags" in serializer.validated_data:
-            tags = serializer.validated_data['tags']  
+        categories = []
+        if "categories" in serializer.validated_data:
+            categories = serializer.validated_data['categories']  
+            if len(categories):
+                posts = posts.filter(post_category__in = categories)
 
         author = None
         if "author" in serializer.validated_data:
-            author = serializer.validated_data['author'] 
+            author = serializer.validated_data['author']
+            posts = posts.filter(author=author)
 
         posts = posts.annotate( post_id =F("id"), 
                                 parent_title =F("parent__title"), 
@@ -354,10 +364,10 @@ class PostView(BaseView):
                                         "published_at", "thumbnail").order_by("-post_id")
 
         self.paginate(posts)
-        data = self.response_paging(self.paging_list)   
+        data = self.response_paging(self.paging_list) if is_pagination ==1 else posts
 
         if detail ==1:
-            list_post = self.paging_list
+            list_post = self.paging_list if is_pagination == 1 else posts
             post_tags = PostTag.objects.filter(post__in = get_value_list(list_post, "post_id")).annotate(post_tag_id =F("id"),
                                                                         title =F("tag__title"),
                                                                         slug =F("tag__slug"),
@@ -395,7 +405,7 @@ class PostView(BaseView):
                                             "description": post_category["description"],
                                              })     
 
-            data = self.response_paging(list_post)   
+            data = self.response_paging(list_post) if is_pagination == 1 else list_post
         
         result ={
             "data":data,

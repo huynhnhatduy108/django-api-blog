@@ -7,7 +7,7 @@ from datetime import datetime
 
 class ListPostSerializer(serializers.Serializer):
     detail = serializers.IntegerField(help_text="Detail tags and categories of post",required=False,allow_null=True)
-    pagination = serializers.IntegerField(help_text="Pagination of post",required=False,allow_null=True)
+    is_pagination = serializers.IntegerField(help_text="Pagination of post",required=False,allow_null=True)
     keyword = serializers.CharField(help_text="keyword of post",required=False,allow_null=True, allow_blank=True)
     tags = serializers.ListField(child=serializers.IntegerField(help_text="list tags of Post"),allow_null=True,required=False)
     categories = serializers.ListField(child=serializers.IntegerField(help_text="list category of Post"), allow_null=True,required=False)
@@ -21,6 +21,11 @@ class ListPostSerializer(serializers.Serializer):
             detail = data["detail"]
             if detail not in [0,1]:
                 raise serializers.ValidationError("detail must be in [0,1]!")
+
+        if "is_pagination" in data:
+                    detail = data["is_pagination"]
+                    if detail not in [0,1]:
+                        raise serializers.ValidationError("is_pagination must be in [0,1]!")
 
         if "tags" in data:
             tags = data["tags"]

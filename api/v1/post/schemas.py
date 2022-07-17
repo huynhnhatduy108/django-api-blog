@@ -3,7 +3,7 @@ from drf_spectacular.utils import OpenApiExample, OpenApiParameter
 
 PARAMETER_LIST_POST = [
     OpenApiParameter(name="detail", type=OpenApiTypes.STR, description="Detail tags and categories of post"),
-    OpenApiParameter(name="pagination", type=OpenApiTypes.STR, description="pagination of post"),
+    OpenApiParameter(name="is_pagination", type=OpenApiTypes.STR, description="pagination of post"),
     OpenApiParameter(name="keyword", type=OpenApiTypes.STR, description="keyword search of post"),
     OpenApiParameter(name="tags", type={'type': 'array', 'items': {'type': 'number'}}, description="tags search of post"),
     OpenApiParameter(name="categories", type={'type': 'array', 'items': {'type': 'number'}}, description="categories search of post"),
