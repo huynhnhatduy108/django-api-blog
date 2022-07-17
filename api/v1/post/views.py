@@ -235,6 +235,10 @@ class PostAuthenticationView(BaseAuthenticationView):
             published_at = serializer.validated_data['published_at']
             post.published_at = published_at
         
+        if "thumbnail" in serializer.validated_data:
+            thumbnail = serializer.validated_data['thumbnail']
+            post.thumbnail = thumbnail
+        
         if "tags" in serializer.validated_data:
             tags = serializer.validated_data['tags']
             if len(tags):
