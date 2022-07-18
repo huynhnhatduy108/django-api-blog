@@ -7,7 +7,7 @@ from datetime import datetime
 
 class ListPostSerializer(serializers.Serializer):
     detail = serializers.IntegerField(help_text="Detail tags and categories of post",required=False,allow_null=True)
-    pagination = serializers.IntegerField(help_text="Pagination of post",required=False,allow_null=True)
+    is_pagination = serializers.IntegerField(help_text="Pagination of post",required=False,allow_null=True)
     keyword = serializers.CharField(help_text="keyword of post",required=False,allow_null=True, allow_blank=True)
     tags = serializers.ListField(child=serializers.IntegerField(help_text="list tags of Post"),allow_null=True,required=False)
     categories = serializers.ListField(child=serializers.IntegerField(help_text="list category of Post"), allow_null=True,required=False)
@@ -21,6 +21,11 @@ class ListPostSerializer(serializers.Serializer):
             detail = data["detail"]
             if detail not in [0,1]:
                 raise serializers.ValidationError("detail must be in [0,1]!")
+
+        if "is_pagination" in data:
+                    detail = data["is_pagination"]
+                    if detail not in [0,1]:
+                        raise serializers.ValidationError("is_pagination must be in [0,1]!")
 
         if "tags" in data:
             tags = data["tags"]
@@ -156,7 +161,7 @@ class UpdatePostSerializer(serializers.Serializer):
     @staticmethod
     def validate(data):
         error = []
-
+        
         if "parent" in data:
             parent = data["parent"]
             if parent is not None:
@@ -178,9 +183,9 @@ class UpdatePostSerializer(serializers.Serializer):
             if not isinstance(tags, list):
                 raise serializers.ValidationError("tags must be array []!")
             if len(tags):
-                list_tags = Category.objects.filter(id__in = tags)
+                list_tags = Tag.objects.filter(id__in = tags)
                 if len(list_tags) != len(tags):
-                    raise serializers.ValidationError("some category is not exist or duplicate!")
+                    raise serializers.ValidationError("some tags is not exist or duplicate!")
                 
            
         if "categories" in data:

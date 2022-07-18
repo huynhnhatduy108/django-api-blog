@@ -235,6 +235,10 @@ class PostAuthenticationView(BaseAuthenticationView):
             published_at = serializer.validated_data['published_at']
             post.published_at = published_at
         
+        if "thumbnail" in serializer.validated_data:
+            thumbnail = serializer.validated_data['thumbnail']
+            post.thumbnail = thumbnail
+        
         if "tags" in serializer.validated_data:
             tags = serializer.validated_data['tags']
             if len(tags):
@@ -322,26 +326,36 @@ class PostView(BaseView):
         serializer.is_valid(raise_exception=True)
 
         posts = Post.objects.all()
-        print("serializer.validated_data",serializer.validated_data)
+
         detail = 0
         if "detail" in serializer.validated_data:
             detail = serializer.validated_data['detail']
+
+        is_pagination = 1
+        if "is_pagination" in serializer.validated_data:
+            is_pagination = serializer.validated_data['is_pagination']
         
         keyword = None
-        if "detail" in serializer.validated_data:
-            detail = serializer.validated_data['detail'] 
+        if "keyword" in serializer.validated_data:
+            keyword = serializer.validated_data['keyword'] 
+            posts = posts.filter(Q(title__icontains= keyword)|Q(content__icontains= keyword))
         
-        tags = None
+        tags = []
         if "tags" in serializer.validated_data:
             tags = serializer.validated_data['tags']
+            if len(tags):
+                posts = posts.filter(post_tag__in = tags)
 
-        tags = None
-        if "tags" in serializer.validated_data:
-            tags = serializer.validated_data['tags']  
+        categories = []
+        if "categories" in serializer.validated_data:
+            categories = serializer.validated_data['categories']  
+            if len(categories):
+                posts = posts.filter(post_category__in = categories)
 
         author = None
         if "author" in serializer.validated_data:
-            author = serializer.validated_data['author'] 
+            author = serializer.validated_data['author']
+            posts = posts.filter(author=author)
 
         posts = posts.annotate( post_id =F("id"), 
                                 parent_title =F("parent__title"), 
@@ -354,16 +368,16 @@ class PostView(BaseView):
                                         "published_at", "thumbnail").order_by("-post_id")
 
         self.paginate(posts)
-        data = self.response_paging(self.paging_list)   
+        data = self.response_paging(self.paging_list) if is_pagination ==1 else posts
 
         if detail ==1:
-            list_post = self.paging_list
+            list_post = self.paging_list if is_pagination == 1 else posts
             post_tags = PostTag.objects.filter(post__in = get_value_list(list_post, "post_id")).annotate(post_tag_id =F("id"),
                                                                         title =F("tag__title"),
                                                                         slug =F("tag__slug"),
                                                                         meta_title =F("tag__meta_title"),
                                                                         description =F("tag__description")
-                                                                        ).values("post_tag_id", "tag_id","post_id", "slug", "meta_title", "description")
+                                                                        ).values("post_tag_id", "tag_id","post_id", "title","slug", "meta_title", "description")
 
             post_categories = PostCategory.objects.filter(post__in=get_value_list(list_post, "post_id")).annotate(post_category_id =F("id"),
                                                                         title =F("category__title"),
@@ -371,7 +385,7 @@ class PostView(BaseView):
                                                                         meta_title =F("category__meta_title"),
                                                                         description =F("category__description"),
                                                                         thumbnail =F("category__thumbnail")
-                                                                        ).values("post_category_id", "post_id", "category_id", "slug", "meta_title", "description", "thumbnail")
+                                                                        ).values("post_category_id", "post_id","title", "category_id", "slug", "meta_title", "description", "thumbnail")
             
             for post in list_post:
                 post["tags"] =[]
@@ -382,6 +396,7 @@ class PostView(BaseView):
                                             "tag_id": post_tag["tag_id"],
                                             "post_tag_id":post_tag["post_tag_id"],
                                             "slug": post_tag["slug"],
+                                            "title": post_tag["title"],
                                             "meta_title": post_tag["meta_title"],
                                             "description": post_tag["description"],
                                              })
@@ -391,11 +406,12 @@ class PostView(BaseView):
                                             "category_id": post_category["category_id"],
                                             "post_category_id": post_category["post_category_id"],
                                             "slug": post_category["slug"],
+                                            "title": post_category["title"],
                                             "meta_title": post_category["meta_title"],
                                             "description": post_category["description"],
                                              })     
 
-            data = self.response_paging(list_post)   
+            data = self.response_paging(list_post) if is_pagination == 1 else list_post
         
         result ={
             "data":data,
