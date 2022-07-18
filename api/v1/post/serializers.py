@@ -120,7 +120,7 @@ class CreatePostSerializer(serializers.Serializer):
         if "published_at" in data:
             published_at = data["published_at"]
             try:
-                published_at = '{} 00:00:00'.format(published_at, '%d/%m/%Y %H:%M:%S')
+                published_at = '{}'.format(published_at, '%d/%m/%Y %H:%M:%S')
                 published_at = datetime.strptime(published_at, '%d/%m/%Y %H:%M:%S')
             except:
                 raise serializers.ValidationError("published_at type is date %d/%m/%Y")
@@ -172,7 +172,7 @@ class UpdatePostSerializer(serializers.Serializer):
         if "published_at" in data:
             published_at = data["published_at"]
             try:
-                published_at = '{} 00:00:00'.format(published_at, '%d/%m/%Y %H:%M:%S')
+                published_at = '{}'.format(published_at, '%d/%m/%Y %H:%M:%S')
                 published_at = datetime.strptime(published_at, '%d/%m/%Y %H:%M:%S')
             except:
                 raise serializers.ValidationError("published_at type is date %d/%m/%Y")
