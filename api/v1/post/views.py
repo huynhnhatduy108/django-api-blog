@@ -241,25 +241,23 @@ class PostAuthenticationView(BaseAuthenticationView):
         
         if "tags" in serializer.validated_data:
             tags = serializer.validated_data['tags']
-            if len(tags):
-                post_tags = PostTag.objects.filter(post= pk).values("id", "tag_id")
-                old_post_tags_id = get_value_list(post_tags,'tag_id')
-                tags_add, tags_delete = compare_old_to_new_list(tags,old_post_tags_id)
-                if len(tags_add):   
-                    PostTag.objects.bulk_create([PostTag(post_id=post.id, tag_id=tag_id) for tag_id in tags_add])
-                if len(tags_delete):   
-                    PostTag.objects.filter(tag_id__in = tags_delete).delete()
+            post_tags = PostTag.objects.filter(post= pk).values("id", "tag_id")
+            old_post_tags_id = get_value_list(post_tags,'tag_id')
+            tags_add, tags_delete = compare_old_to_new_list(tags,old_post_tags_id)
+            if len(tags_add):   
+                PostTag.objects.bulk_create([PostTag(post_id=post.id, tag_id=tag_id) for tag_id in tags_add])
+            if len(tags_delete):   
+                PostTag.objects.filter(tag_id__in = tags_delete).delete()
         
         if "categories" in serializer.validated_data:
             categories = serializer.validated_data['categories']
-            if len(categories):
-                post_categories = PostCategory.objects.filter(post= pk).values("id", "category_id")
-                old_post_categories_id = get_value_list(post_categories,'category_id')
-                categories_add, categories_delete = compare_old_to_new_list(categories,old_post_categories_id)
-                if len(categories_add):   
-                    PostCategory.objects.bulk_create([PostCategory(post_id=post.id, category_id=category_id) for category_id in categories_add])
-                if len(categories_delete):   
-                    PostCategory.objects.filter(category_id__in = categories_delete).delete()
+            post_categories = PostCategory.objects.filter(post= pk).values("id", "category_id")
+            old_post_categories_id = get_value_list(post_categories,'category_id')
+            categories_add, categories_delete = compare_old_to_new_list(categories,old_post_categories_id)
+            if len(categories_add):   
+                PostCategory.objects.bulk_create([PostCategory(post_id=post.id, category_id=category_id) for category_id in categories_add])
+            if len(categories_delete):   
+                PostCategory.objects.filter(category_id__in = categories_delete).delete()
 
         post.save()
 
@@ -338,19 +336,22 @@ class PostView(BaseView):
         keyword = None
         if "keyword" in serializer.validated_data:
             keyword = serializer.validated_data['keyword'] 
-            posts = posts.filter(Q(title__icontains= keyword)|Q(content__icontains= keyword))
+            posts = posts.filter(Q(title__icontains= keyword))
         
         tags = []
         if "tags" in serializer.validated_data:
             tags = serializer.validated_data['tags']
             if len(tags):
-                posts = posts.filter(post_tag__in = tags)
+                tags_filter = Q(Q(post_tag__tag_id=15) & Q(post_tag__tag_id=8))
+                print("tags_filter", tags_filter)
+                # posts = posts.filter(post_tag__tag_id__in =)
 
         categories = []
         if "categories" in serializer.validated_data:
             categories = serializer.validated_data['categories']  
-            if len(categories):
-                posts = posts.filter(post_category__in = categories)
+            # if len(categories):
+                # posts = posts.filter(post_category__category__in=)
+
 
         author = None
         if "author" in serializer.validated_data:
