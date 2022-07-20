@@ -9,13 +9,12 @@ class ListPostSerializer(serializers.Serializer):
     detail = serializers.IntegerField(help_text="Detail tags and categories of post",required=False,allow_null=True)
     is_pagination = serializers.IntegerField(help_text="Pagination of post",required=False,allow_null=True)
     keyword = serializers.CharField(help_text="keyword of post",required=False,allow_null=True, allow_blank=True)
-    tags = serializers.ListField(child=serializers.IntegerField(help_text="list tags of Post"),allow_null=True,required=False)
-    categories = serializers.ListField(child=serializers.IntegerField(help_text="list category of Post"), allow_null=True,required=False)
+    tag = serializers.IntegerField(help_text="tag of post",required=False,allow_null=True)
+    category = serializers.IntegerField(help_text="category of post",required=False,allow_null=True)
     author = serializers.IntegerField(help_text="Author of post",required=False,allow_null=True)
 
     @staticmethod
     def validate(data):
-        print("data", data)
         error = []
         if "detail" in data:
             detail = data["detail"]
@@ -27,23 +26,19 @@ class ListPostSerializer(serializers.Serializer):
                     if detail not in [0,1]:
                         raise serializers.ValidationError("is_pagination must be in [0,1]!")
 
-        if "tags" in data:
-            tags = data["tags"]
-            if not isinstance(tags, list):
-                raise serializers.ValidationError("tags must be array []!")
-            if len(tags):
-                list_tag = Tag.objects.filter(id__in = tags)
-                if len(list_tag) != len(tags):
-                    raise serializers.ValidationError("some tag is not exist!")
+        if "tag" in data:
+            tag = data["tag"]
+            if tag:
+                tag = Tag.objects.filter(id = tag)
+                if not tag:
+                    raise serializers.ValidationError("Tag is not exist!")
 
-        if "categories" in data:
-            categories = data["categories"]
-            if not isinstance(categories, list):
-                raise serializers.ValidationError("categories must be array []!")
-            if len(categories):
-                list_category = Category.objects.filter(id__in = categories)
-                if len(list_category) != len(categories):
-                    raise serializers.ValidationError("some category is not exist!")
+        if "category" in data:
+            category = data["category"]
+            if category:
+                category = Category.objects.filter(id = category)
+                if not category:
+                    raise serializers.ValidationError("Category is not exist!")
 
         return data
 

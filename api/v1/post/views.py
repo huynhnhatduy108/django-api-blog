@@ -338,20 +338,17 @@ class PostView(BaseView):
             keyword = serializer.validated_data['keyword'] 
             posts = posts.filter(Q(title__icontains= keyword))
         
-        tags = []
-        if "tags" in serializer.validated_data:
-            tags = serializer.validated_data['tags']
-            if len(tags):
-                tags_filter = Q(Q(post_tag__tag_id=15) & Q(post_tag__tag_id=8))
-                print("tags_filter", tags_filter)
-                # posts = posts.filter(post_tag__tag_id__in =)
+        tag = None
+        if "tag" in serializer.validated_data:
+            tag = serializer.validated_data['tag']
+            if tag:
+                posts = posts.filter(post_tag__tag_id =tag)
 
-        categories = []
-        if "categories" in serializer.validated_data:
-            categories = serializer.validated_data['categories']  
-            # if len(categories):
-                # posts = posts.filter(post_category__category__in=)
-
+        category = None
+        if "category" in serializer.validated_data:
+            category = serializer.validated_data['category']  
+            if category:
+                posts = posts.filter(post_category__category_id=category)
 
         author = None
         if "author" in serializer.validated_data:
