@@ -113,6 +113,7 @@ class CommentView(BaseView):
 
         comment = PostComment.objects.create(post_id = post_id, title = title, parent_id = parent, content = content)
 
+
         result ={
             "data":{
                 "comment_id": comment.id,
@@ -123,6 +124,7 @@ class CommentView(BaseView):
                 "user_avatar":None,
                 "created_at": comment.created_at,
                 "post_id": post_id,
+                "sub_comment":[]
             },
             "mess":"create comment to post success!"
         }
@@ -178,6 +180,8 @@ class CommentAuthenticationView(BaseAuthenticationView):
                 "user_name":comment.author.username,
                 "user_avatar":comment.author.avatar_url,
                 "created_at": comment.created_at,
+                "sub_comment":[]
+
             },
             "mess":"create comment to post success!"
         }
