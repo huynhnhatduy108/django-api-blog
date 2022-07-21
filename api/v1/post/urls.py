@@ -4,6 +4,7 @@ from config.contanst import ADMIN_ROLE, POST, USER_ROLE
 
 urlpatterns = [
     path('list', views.PostView.as_view({'get': 'get_list_post'}), name="get_list_post"),
+    path('list_relation', views.PostView.as_view({'post': 'get_list_post_relation'}), name="get_list_post_relation"),
     path('list_by_author/<int:author_id>', views.PostView.as_view({'get': 'get_list_post_by_author'}), name="get_list_post_by_author"),
     path('list_by_tag/<int:tag_id>', views.PostView.as_view({'get': 'get_list_post_by_tag'}), name="get_list_post_by_tag"),
     path('list_by_category/<int:category_id>', views.PostView.as_view({'get': 'get_list_post_by_category'}), name="get_list_post_by_category"),

@@ -3,6 +3,7 @@ from api.base.serializers import ExceptionResponseSerializer
 from api.functions.function import gen_random_string, gen_slug
 from api.v1.tag.schemas import PARAMETER_SEARCH_TAG
 from api.v1.tag.serializers import CreateTagSerializer, SearchTagSerializer, UpdateTagSerializer
+from models.post.models import PostTag
 from models.tag.models import Tag
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
@@ -27,7 +28,13 @@ class TagView(BaseView):
         ]
     )
     def get_list_tag(self, request):
-        tags = Tag.objects.all().values("id","slug", "title", "meta_title","description").order_by("-id")
+        tags = Tag.objects.all().annotate(tag_id =F('id'),
+                                        post_count=Subquery(PostTag.objects.filter(
+                                        tag_id=OuterRef('tag_id'))
+                                        .values("tag_id")
+                                        .annotate(count=Count('id'))
+                                        .values('count'))).values("id","slug", "title", "meta_title","description","post_count").order_by("-id")
+
         result ={
             "data":list(tags),
             "mess":"Get list tag success!"

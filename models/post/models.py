@@ -17,6 +17,7 @@ class Post(models.Model):
     author =  models.ForeignKey(User, db_column='user_id', on_delete=models.PROTECT, blank=True, null=True, related_name="author_post")
     published_at = models.DateTimeField(db_column='published_at', blank=True, null=True)
     thumbnail = models.CharField(db_column='thumbnail', blank=True, null=True, max_length=500)
+    # views = models.IntegerField(db_column='views', blank=True, null=True, default=0)
 
     created_at = models.DateTimeField(db_column='created_at', auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField(db_column='updated_at', auto_now=True, blank=True, null=True)

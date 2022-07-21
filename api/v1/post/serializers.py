@@ -41,6 +41,42 @@ class ListPostSerializer(serializers.Serializer):
                     raise serializers.ValidationError("Category is not exist!")
 
         return data
+    
+class ListPostRelationSerializer(serializers.Serializer):
+    post_id = serializers.IntegerField(help_text="id of post",required=False,allow_null=True)
+    tags = serializers.ListField(child=serializers.IntegerField(help_text="list tags of Post"), allow_null=True,required=False)
+    categories = serializers.ListField(child=serializers.IntegerField(help_text="list category of Post"), allow_null=True,required=False)
+
+    @staticmethod
+    def validate(data):
+        error = []
+        if not "post_id" in data:
+            raise serializers.ValidationError("post id is required")
+        else:
+            post_id =  data["post_id"]
+            post =Post.objects.filter(id = post_id).first()
+            if not post:
+                raise serializers.ValidationError("post do not exist")
+
+        if "tags" in data:
+            tags = data["tags"]
+            if not isinstance(tags, list):
+                raise serializers.ValidationError("tags must be array []!")
+            if len(tags):
+                list_tag = Tag.objects.filter(id__in = tags)
+                if len(list_tag) != len(tags):
+                    raise serializers.ValidationError("some tag is not exist or duplicate!")
+
+        if "categories" in data:
+            categories = data["categories"]
+            if not isinstance(categories, list):
+                raise serializers.ValidationError("categories must be array []!")
+            if len(categories):
+                list_category = Category.objects.filter(id__in = categories)
+                if len(list_category) != len(categories):
+                    raise serializers.ValidationError("some category is not exist or duplicate!")
+
+        return data
 
 class ListPostByAuthorSerializer(serializers.Serializer):
     detail = serializers.IntegerField(help_text="Detail tags and categories of post",required=False,allow_null=True)
