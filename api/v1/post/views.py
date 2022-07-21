@@ -763,7 +763,7 @@ class PostView(BaseView):
                                                                 "parent_title","slug", "title",
                                                                 "meta_title","content", "summary",
                                                                 "author_id", "author_name", "author_avatar",
-                                                                "published_at").first()
+                                                                "published_at", "thumbnail").first()
             
         if not post:
             return Response({"mess": "post do not exist!"}, status=status.HTTP_400_BAD_REQUEST)  
