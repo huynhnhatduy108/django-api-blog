@@ -132,6 +132,8 @@ class CommentView(BaseView):
     
 
 class CommentAuthenticationView(BaseAuthenticationView):
+    
+
     @extend_schema(
         operation_id='admin comment to post',
         summary='admin comment to post',
@@ -204,22 +206,47 @@ class CommentAuthenticationView(BaseAuthenticationView):
             # EXAMPLE_RESPONSE_TASK,
         ]
     )
-    def delete_comment(self, request , post_id):
-        print("cdddddddddddd====================")
-
-        post  = Post.objects.filter(id= post_id).first()
-        if not post:
-            return Response({"mess": "post_id do not exist!"}, status=status.HTTP_400_BAD_REQUEST)
-
-
-        PostComment.objects.filter(post_id =post_id).delete()
-        # print(len(comments))
-        # comments.delete()
+    def delete_comment(self, request , comment_id):
+        comments = PostComment.objects.filter(id = comment_id, parent_id = comment_id)
+        if not comments:
+            return Response({"mess": "comment do not exist!"}, status=status.HTTP_400_BAD_REQUEST)
+        comments.delete()
 
         result ={
             "data":None,
             "mess":"delete comment to post success!",
         }
         return Response(result, status=status.HTTP_200_OK)
+
+    
+    @extend_schema(
+        operation_id='delete post comment by post id',
+        summary='delete post comment by post id',
+        tags=["H. comment"],
+        description='delete post comment by post id',
+        parameters = None,
+        request= None,
+        responses={
+            status.HTTP_200_OK: None,
+            status.HTTP_401_UNAUTHORIZED:ExceptionResponseSerializer,
+            status.HTTP_400_BAD_REQUEST: ExceptionResponseSerializer,
+        },
+        examples=[
+            # EXAMPLE_RESPONSE_TASK,
+        ]
+    )
+    def delete_comment_by_post_id(self, request , post_id):
+        post  = Post.objects.filter(id= post_id).first()
+        if not post:
+            return Response({"mess": "post_id do not exist!"}, status=status.HTTP_400_BAD_REQUEST)
+
+        PostComment.objects.filter(post_id = post_id).delete()
+
+        result ={
+            "data":None,
+            "mess":"delete comment of post success!",
+        }
+        return Response(result, status=status.HTTP_200_OK)
+    
     
 

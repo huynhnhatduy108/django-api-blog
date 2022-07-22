@@ -7,7 +7,7 @@ from api.functions.function import compare_old_to_new_list, gen_slug_radom_strin
 from api.v1.post.schemas import PARAMETER_LIST_POST, PARAMETER_SEARCH_POST_BY_AUTHOR, PARAMETER_SEARCH_POST_BY_CATEGORY, PARAMETER_SEARCH_POST_BY_TAG
 from api.v1.post.serializers import CreatePostSerializer, ListPostByAuthorSerializer, ListPostByCategorySerializer, ListPostByTagSerializer, ListPostRelationSerializer, ListPostSerializer, SearchPostByTitleSerializer, UpdatePostSerializer
 from models.category.models import Category
-from models.post.models import Post, PostCategory, PostMeta, PostTag
+from models.post.models import Post, PostCategory, PostComment, PostMeta, PostTag
 from models.tag.models import Tag
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
@@ -359,11 +359,13 @@ class PostView(BaseView):
                                 parent_title =F("parent__title"), 
                                 author_name =F("author__full_name"),
                                 author_avatar =F("author__avatar_url"),
+                                comment_count =Subquery(PostComment.objects.filter(
+                                    post_id =OuterRef("post_id")).values("post_id").annotate(count =Count('id')).values("count")),
                                 ).values("post_id", "parent_id", 
                                         "parent_title","slug", "title",
                                         "meta_title","content", "summary",
                                         "author_id", "author_name", "author_avatar",
-                                        "published_at", "thumbnail").order_by("-post_id")
+                                        "published_at", "thumbnail", "comment_count").order_by("-post_id")
 
         self.paginate(posts)
         data = self.response_paging(self.paging_list) if is_pagination ==1 else posts
@@ -448,7 +450,6 @@ class PostView(BaseView):
         categories = []
         if "categories" in serializer.validated_data:
             categories = serializer.validated_data['categories']
-            print("categories", categories)
             posts = posts.filter(post_category__category_id__in = categories)
 
         posts = posts.annotate( post_id =F("id"), 
