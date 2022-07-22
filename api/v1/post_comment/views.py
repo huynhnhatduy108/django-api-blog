@@ -207,7 +207,7 @@ class CommentAuthenticationView(BaseAuthenticationView):
         ]
     )
     def delete_comment(self, request , comment_id):
-        comments = PostComment.objects.filter(id = comment_id, parent_id = comment_id)
+        comments = PostComment.objects.filter(Q(id = comment_id)|Q(parent_id = comment_id))
         if not comments:
             return Response({"mess": "comment do not exist!"}, status=status.HTTP_400_BAD_REQUEST)
         comments.delete()
