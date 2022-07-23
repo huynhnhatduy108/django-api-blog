@@ -757,15 +757,15 @@ class PostView(BaseView):
         post.views +=1
         post.save()
         
-        post = post.annotate(post_id =F("id"), 
-                            parent_title =F("parent__title"), 
-                            author_name =F("author__full_name"),
-                            author_avatar =F("author__avatar_url"),
-                            ).values("post_id", "parent_id", 
-                                    "parent_title","slug", "title",
-                                    "meta_title","content", "summary",
-                                    "author_id", "author_name", "author_avatar",
-                                    "published_at",'thumbnail',"views")  
+        post =Post.objects.filter(id=post.id).annotate(post_id =F("id"), 
+                                                        parent_title =F("parent__title"), 
+                                                        author_name =F("author__full_name"),
+                                                        author_avatar =F("author__avatar_url"),
+                                                        ).values("post_id", "parent_id", 
+                                                                "parent_title","slug", "title",
+                                                                "meta_title","content", "summary",
+                                                                "author_id", "author_name", "author_avatar",
+                                                                "published_at",'thumbnail',"views").first()  
     
         post_tags = PostTag.objects.filter(post = pk).annotate(post_tag_id =F("id"),
                                                                 title =F("tag__title"),
@@ -781,7 +781,6 @@ class PostView(BaseView):
                                                                         description =F("category__description"),
                                                                         thumbnail =F("category__thumbnail")                                                                                                                                               
                                                                         ).values("post_category_id", "category_id", "slug", "meta_title", "description", "thumbnail")
-
         post["tags"] = list(post_tags)
         post["categories"] = list(post_categories)
 
@@ -816,17 +815,17 @@ class PostView(BaseView):
         post.views +=1
         post.save()
 
-        post =post.annotate( post_id =F("id"), 
-                            parent_title =F("parent__title"), 
-                            author_name =F("author__full_name"),
-                            author_avatar =F("author__avatar_url"),
-                            comment_count =Subquery(PostComment.objects.filter(
-                                            post_id =OuterRef("post_id")).values("post_id").annotate(count =Count('id')).values("count")),
-                            ).values("post_id", "parent_id", 
-                                    "parent_title","slug", "title",
-                                    "meta_title","content", "summary",
-                                    "author_id", "author_name", "author_avatar",
-                                    "published_at", "thumbnail", "comment_count","views")
+        post =Post.objects.filter(id=post.id).annotate( post_id =F("id"), 
+                                                        parent_title =F("parent__title"), 
+                                                        author_name =F("author__full_name"),
+                                                        author_avatar =F("author__avatar_url"),
+                                                        comment_count =Subquery(PostComment.objects.filter(
+                                                        post_id =OuterRef("post_id")).values("post_id").annotate(count =Count('id')).values("count")),
+                                                        ).values("post_id", "parent_id", 
+                                                                "parent_title","slug", "title",
+                                                                "meta_title","content", "summary",
+                                                                "author_id", "author_name", "author_avatar",
+                                                                "published_at", "thumbnail", "comment_count","views").first()  
             
         post_tags = PostTag.objects.filter(post= post["post_id"]).annotate(post_tag_id =F("id"),
                                                                             title =F("tag__title"),
