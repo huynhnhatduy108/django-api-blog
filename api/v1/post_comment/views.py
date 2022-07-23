@@ -132,7 +132,7 @@ class CommentView(BaseView):
     
 
 class CommentAuthenticationView(BaseAuthenticationView):
-    
+
 
     @extend_schema(
         operation_id='admin comment to post',
@@ -179,7 +179,7 @@ class CommentAuthenticationView(BaseAuthenticationView):
                 "title": comment.title,
                 "comment_parent_id": comment.parent_id,
                 "content": comment.content,
-                "user_name":comment.author.username,
+                "user_name":comment.author.full_name,
                 "user_avatar":comment.author.avatar_url,
                 "created_at": comment.created_at,
                 "sub_comment":[]

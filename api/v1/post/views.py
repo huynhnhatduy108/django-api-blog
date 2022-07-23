@@ -809,11 +809,13 @@ class PostView(BaseView):
                                                         parent_title =F("parent__title"), 
                                                         author_name =F("author__full_name"),
                                                         author_avatar =F("author__avatar_url"),
+                                                        comment_count =Subquery(PostComment.objects.filter(
+                                                                        post_id =OuterRef("post_id")).values("post_id").annotate(count =Count('id')).values("count")),
                                                         ).values("post_id", "parent_id", 
                                                                 "parent_title","slug", "title",
                                                                 "meta_title","content", "summary",
                                                                 "author_id", "author_name", "author_avatar",
-                                                                "published_at", "thumbnail").first()
+                                                                "published_at", "thumbnail", "comment_count").first()
             
         if not post:
             return Response({"mess": "post do not exist!"}, status=status.HTTP_400_BAD_REQUEST)  
