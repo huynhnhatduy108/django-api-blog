@@ -208,12 +208,15 @@ class CommentAuthenticationView(BaseAuthenticationView):
     )
     def delete_comment(self, request , comment_id):
         comments = PostComment.objects.filter(Q(id = comment_id)|Q(parent_id = comment_id))
+        count_delete = len(comments)
         if not comments:
             return Response({"mess": "comment do not exist!"}, status=status.HTTP_400_BAD_REQUEST)
         comments.delete()
 
         result ={
-            "data":None,
+            "data":{
+                "count_delete":count_delete,
+            },
             "mess":"delete comment to post success!",
         }
         return Response(result, status=status.HTTP_200_OK)
@@ -240,10 +243,14 @@ class CommentAuthenticationView(BaseAuthenticationView):
         if not post:
             return Response({"mess": "post_id do not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        PostComment.objects.filter(post_id = post_id).delete()
+        comments = PostComment.objects.filter(post_id = post_id)
+        count_delete = len(comments)
+        comments.delete()
 
         result ={
-            "data":None,
+            "data":{
+                "count_delete":count_delete,
+            },
             "mess":"delete comment of post success!",
         }
         return Response(result, status=status.HTTP_200_OK)
