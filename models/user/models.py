@@ -3,18 +3,18 @@ from django.db import models
 # Create your models here.
 class User(models.Model):
     id = models.BigAutoField(db_column="id",primary_key=True) 
-    username = models.CharField(db_column='username', blank=True, null=True, max_length=50)
-    full_name = models.CharField(db_column='full_name', blank=True, null=True, max_length=50)
+    username = models.CharField(db_column='username', blank=True, null=True, max_length=255)
+    full_name = models.CharField(db_column='full_name', blank=True, null=True, max_length=255)
     email = models.CharField(db_column='email', max_length=200, blank=True, null=True)
-    address = models.CharField(db_column='address', blank=True, null=True, max_length=200)
-    phone = models.CharField(db_column='phone', blank=True, null=True, max_length=50)
+    address = models.CharField(db_column='address', blank=True, null=True, max_length=255)
+    phone = models.CharField(db_column='phone', blank=True, null=True, max_length=255)
     intro = models.TextField(db_column='intro', blank=True, null=True)
     profile = models.TextField(db_column='profile', blank=True, null=True)
-    password = models.CharField(db_column='password', blank=True, null=True, max_length=50)
+    password = models.CharField(db_column='password', blank=True, null=True, max_length=255)
     role = models.IntegerField(db_column='role', blank=True, null=True, default= 0)  #role users
     avatar_url = models.CharField(db_column='avatar_url', blank=True, null=True, max_length=500)
     avatar_provider = models.CharField(db_column='avatar_provider', blank=True, null=True, max_length=500)
-    c_provider = models.CharField(db_column='c_provider', blank=True, null=True, max_length=50)
+    c_provider = models.CharField(db_column='c_provider', blank=True, null=True, max_length=255)
     refresh_token = models.CharField(db_column='refresh_token', blank=True, null=True, max_length=500)
     access_token = models.CharField(db_column='access_token', blank=True, null=True, max_length=500)
 

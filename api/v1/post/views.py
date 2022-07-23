@@ -750,18 +750,22 @@ class PostView(BaseView):
         ]
     )
     def get_info_by_id(self, request, pk,*args, **kwargs):
-        post = Post.objects.filter(pk=pk).annotate( post_id =F("id"), 
-                                                    parent_title =F("parent__title"), 
-                                                    author_name =F("author__full_name"),
-                                                    author_avatar =F("author__avatar_url"),
-                                                    ).values("post_id", "parent_id", 
-                                                            "parent_title","slug", "title",
-                                                            "meta_title","content", "summary",
-                                                            "author_id", "author_name", "author_avatar",
-                                                            "published_at",'thumbnail').first()
-        
+        post = Post.objects.filter(pk=pk).first()
+       
         if not post:
             return Response({"mess": "post do not exist!"}, status=status.HTTP_400_BAD_REQUEST)  
+        post.views +=1
+        post.save()
+        
+        post = post.annotate(post_id =F("id"), 
+                            parent_title =F("parent__title"), 
+                            author_name =F("author__full_name"),
+                            author_avatar =F("author__avatar_url"),
+                            ).values("post_id", "parent_id", 
+                                    "parent_title","slug", "title",
+                                    "meta_title","content", "summary",
+                                    "author_id", "author_name", "author_avatar",
+                                    "published_at",'thumbnail',"views")  
     
         post_tags = PostTag.objects.filter(post = pk).annotate(post_tag_id =F("id"),
                                                                 title =F("tag__title"),
@@ -805,20 +809,24 @@ class PostView(BaseView):
         )
 
     def get_info_by_slug(self, request, slug,*args, **kwargs):
-        post = Post.objects.filter(slug=slug).annotate( post_id =F("id"), 
-                                                        parent_title =F("parent__title"), 
-                                                        author_name =F("author__full_name"),
-                                                        author_avatar =F("author__avatar_url"),
-                                                        comment_count =Subquery(PostComment.objects.filter(
-                                                                        post_id =OuterRef("post_id")).values("post_id").annotate(count =Count('id')).values("count")),
-                                                        ).values("post_id", "parent_id", 
-                                                                "parent_title","slug", "title",
-                                                                "meta_title","content", "summary",
-                                                                "author_id", "author_name", "author_avatar",
-                                                                "published_at", "thumbnail", "comment_count").first()
-            
+        post = Post.objects.filter(slug=slug).first()
+         
         if not post:
-            return Response({"mess": "post do not exist!"}, status=status.HTTP_400_BAD_REQUEST)  
+            return Response({"mess": "post do not exist!"}, status=status.HTTP_400_BAD_REQUEST) 
+        post.views +=1
+        post.save()
+
+        post =post.annotate( post_id =F("id"), 
+                            parent_title =F("parent__title"), 
+                            author_name =F("author__full_name"),
+                            author_avatar =F("author__avatar_url"),
+                            comment_count =Subquery(PostComment.objects.filter(
+                                            post_id =OuterRef("post_id")).values("post_id").annotate(count =Count('id')).values("count")),
+                            ).values("post_id", "parent_id", 
+                                    "parent_title","slug", "title",
+                                    "meta_title","content", "summary",
+                                    "author_id", "author_name", "author_avatar",
+                                    "published_at", "thumbnail", "comment_count","views")
             
         post_tags = PostTag.objects.filter(post= post["post_id"]).annotate(post_tag_id =F("id"),
                                                                             title =F("tag__title"),

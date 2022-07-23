@@ -4,9 +4,9 @@ from django.db import models
 class Category(models.Model):
     id = models.BigAutoField(db_column="id",primary_key=True) 
     parent = models.ForeignKey("self", db_column='parent_id', on_delete=models.PROTECT, blank=True, null=True)
-    title = models.CharField(db_column='title', blank=True, null=True, max_length=75)
-    slug = models.CharField(db_column='slug', blank=True, null=True, max_length=100)
-    meta_title = models.CharField(db_column='meta_title', blank=True, null=True, max_length=100)
+    title = models.CharField(db_column='title', blank=True, null=True, max_length=255)
+    slug = models.CharField(db_column='slug', blank=True, null=True, max_length=255)
+    meta_title = models.CharField(db_column='meta_title', blank=True, null=True, max_length=255)
     thumbnail = models.CharField(db_column='thumbnail', blank=True, null=True, max_length=500)
     description = models.TextField(db_column='description', blank=True, null=True)
     

@@ -9,15 +9,15 @@ from models.user.models import User
 class Post(models.Model):
     id = models.BigAutoField(db_column="id",primary_key=True) 
     parent = models.ForeignKey("self", db_column='parent_id', on_delete=models.PROTECT, blank=True, null=True)
-    slug = models.CharField(db_column='slug', blank=True, null=True, max_length=50)
-    title = models.CharField(db_column='title', blank=True, null=True, max_length=100)
-    meta_title = models.CharField(db_column='meta_title', blank=True, null=True, max_length=100)
+    slug = models.CharField(db_column='slug', blank=True, null=True, max_length=255)
+    title = models.CharField(db_column='title', blank=True, null=True, max_length=255)
+    meta_title = models.CharField(db_column='meta_title', blank=True, null=True, max_length=255)
     content = models.TextField(db_column='content', blank=True, null=True)
     summary = models.TextField(db_column='summary', blank=True, null=True)
     author =  models.ForeignKey(User, db_column='user_id', on_delete=models.PROTECT, blank=True, null=True, related_name="author_post")
     published_at = models.DateTimeField(db_column='published_at', blank=True, null=True)
     thumbnail = models.CharField(db_column='thumbnail', blank=True, null=True, max_length=500)
-    # views = models.IntegerField(db_column='views', blank=True, null=True, default=0)
+    views = models.IntegerField(db_column='views', blank=True, null=True, default=0)
 
     created_at = models.DateTimeField(db_column='created_at', auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField(db_column='updated_at', auto_now=True, blank=True, null=True)
@@ -44,7 +44,7 @@ class PostMeta(models.Model):
     id = models.BigAutoField(db_column="id",primary_key=True) 
     post =  models.ForeignKey(Post, db_column='post_id', on_delete=models.PROTECT, blank=True, null=True, related_name="post_meta")
     content = models.TextField(db_column='content', blank=True, null=True)
-    key = models.CharField(db_column='meta_title', blank=True, null=True, max_length=100)
+    key = models.CharField(db_column='meta_title', blank=True, null=True, max_length=255)
 
     created_at = models.DateTimeField(db_column='created_at', auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField(db_column='updated_at', auto_now=True, blank=True, null=True)
