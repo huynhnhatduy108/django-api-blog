@@ -24,5 +24,5 @@ class User(models.Model):
     deleted_flag = models.IntegerField(db_column='deleted_flag', blank=True, null=True, default=0)
 
     def __str__(self):
-        return self.name
+        return str(self.id)
     
