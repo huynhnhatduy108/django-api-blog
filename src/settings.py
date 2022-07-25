@@ -14,6 +14,8 @@ from pathlib import Path
 from datetime import timedelta
 from config.root_local import SIMPLE_JWT_KEY
 import django_heroku
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,7 +32,7 @@ LOCALE_PATHS = (
 SECRET_KEY = 'django-insecure-4fu7-s6)&x=qs@=w#v!-hy297lh00pee9sx21f&97ua_y^m#x!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -229,6 +231,9 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 django_heroku.settings(locals())
+
+db_from_env = dj_database_url.config()
+DATABASES['default'].update(db_from_env)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
