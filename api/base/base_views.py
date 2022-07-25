@@ -25,7 +25,7 @@ class BaseAuthenticationView(CustomAPIView):
         allow = True
         user = self.user           
         if len(role_list):
-            if user["role"] not in role_list:
+            if user.role not in role_list:
                 allow = False  
 
         if not allow:
@@ -57,9 +57,9 @@ class BaseAuthenticationView(CustomAPIView):
             })
     
     def check_permission_post(self, user, pk):
-        post = Post.objects.filter(pk=pk).values("author_id").first()
+        post = Post.objects.filter(pk=pk).first()
         if post:
-            if user["id"] != post["author_id"] and user["role"] < ADMIN_ROLE:
+            if user.id != post.author_id and user.role < ADMIN_ROLE:
                 return False
         return True
 

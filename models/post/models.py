@@ -25,7 +25,7 @@ class Post(models.Model):
     deleted_flag = models.IntegerField(db_column='deleted_flag', blank=True, null=True, default=0)
 
     def __str__(self):
-        return self.name
+        return str(self.id)
 
 class PostTag(models.Model):
     id = models.BigAutoField(db_column="id",primary_key=True) 
@@ -38,7 +38,7 @@ class PostTag(models.Model):
     deleted_flag = models.IntegerField(db_column='deleted_flag', blank=True, null=True, default=0)
 
     def __str__(self):
-        return self.name
+        return str(self.id)
 
 class PostMeta(models.Model):
     id = models.BigAutoField(db_column="id",primary_key=True) 
@@ -52,7 +52,7 @@ class PostMeta(models.Model):
     deleted_flag = models.IntegerField(db_column='deleted_flag', blank=True, null=True, default=0)
 
     def __str__(self):
-        return self.name
+        return str(self.id)
 
 class PostComment(models.Model):
     id = models.BigAutoField(db_column="id",primary_key=True) 
@@ -68,7 +68,7 @@ class PostComment(models.Model):
     deleted_flag = models.IntegerField(db_column='deleted_flag', blank=True, null=True, default=0)
 
     def __str__(self):
-        return self.name
+        return str(self.id)
     
 class PostCategory(models.Model):
     id = models.BigAutoField(db_column="id",primary_key=True) 
@@ -81,4 +81,4 @@ class PostCategory(models.Model):
     deleted_flag = models.IntegerField(db_column='deleted_flag', blank=True, null=True, default=0)
 
     def __str__(self):
-        return self.name
+        return str(self.id)

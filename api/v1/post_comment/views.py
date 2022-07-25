@@ -170,7 +170,7 @@ class CommentAuthenticationView(BaseAuthenticationView):
         if not post:
             return Response({"mess": "post do not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        comment = PostComment.objects.create(post_id = post_id, title = title, parent_id = parent, content = content, author_id = self.user['id'])
+        comment = PostComment.objects.create(post_id = post_id, title = title, parent_id = parent, content = content, author_id = self.user.id)
 
         result ={
             "data":{
@@ -207,11 +207,12 @@ class CommentAuthenticationView(BaseAuthenticationView):
         ]
     )
     def delete_comment(self, request , comment_id):
-        comments = PostComment.objects.filter(Q(id = comment_id)|Q(parent_id = comment_id))
-        count_delete = len(comments)
-        if not comments:
-            return Response({"mess": "comment do not exist!"}, status=status.HTTP_400_BAD_REQUEST)
-        comments.delete()
+        comments_child = PostComment.objects.filter(parent_id = comment_id)
+        count_delete = len(comments_child)
+        comments_parent = PostComment.objects.filter(id = comment_id)
+        count_delete += len(comments_parent)
+        comments_child.delete()
+        comments_parent.delete()
 
         result ={
             "data":{
@@ -243,9 +244,12 @@ class CommentAuthenticationView(BaseAuthenticationView):
         if not post:
             return Response({"mess": "post_id do not exist!"}, status=status.HTTP_400_BAD_REQUEST)
 
-        comments = PostComment.objects.filter(post_id = post_id)
-        count_delete = len(comments)
-        comments.delete()
+        comments_parent = PostComment.objects.filter(post_id = post_id, parent_id__isnull=True)
+        count_delete = len(comments_parent)
+        comments_child = PostComment.objects.filter(post_id = post_id, parent_id__isnull=False)
+        count_delete += len(comments_child)
+        comments_child.delete()
+        comments_parent.delete()
 
         result ={
             "data":{
