@@ -1,17 +1,11 @@
-from unicodedata import category
-from urllib import request
-from wsgiref.util import request_uri
 from api.base.base_views import BaseAuthenticationView, BaseView
 from api.base.serializers import ExceptionResponseSerializer
 from api.functions.function import compare_old_to_new_list, gen_slug_radom_string, get_value_list
 from api.v1.post.schemas import PARAMETER_LIST_POST, PARAMETER_SEARCH_POST_BY_AUTHOR, PARAMETER_SEARCH_POST_BY_CATEGORY, PARAMETER_SEARCH_POST_BY_TAG
 from api.v1.post.serializers import CreatePostSerializer, ListPostByAuthorSerializer, ListPostByCategorySerializer, ListPostByTagSerializer, ListPostRelationSerializer, ListPostSerializer, SearchPostByTitleSerializer, UpdatePostSerializer
-from models.category.models import Category
 from models.post.models import Post, PostCategory, PostComment, PostMeta, PostTag
-from models.tag.models import Tag
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
-from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from django.db.models import F, OuterRef, Value, CharField, Subquery, Count, Q
 

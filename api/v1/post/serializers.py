@@ -1,7 +1,6 @@
 from models.category.models import Category
 from models.post.models import Post
 from models.tag.models import Tag
-from models.user.models import User
 from rest_framework import serializers
 from datetime import datetime
 

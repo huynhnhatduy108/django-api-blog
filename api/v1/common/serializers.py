@@ -1,11 +1,9 @@
 import os
-
 from api.base.authentication import Google,Facebook
 from api.functions.function import is_email_valid
 from config.contanst import FACEBOOK_PROVIDER, GOOGLE_PROVIDER
 from models.user.models import User
 from rest_framework import serializers
-from django.db.models import Q
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(help_text="`username` of User systems",allow_null=True,allow_blank=True, required=False)

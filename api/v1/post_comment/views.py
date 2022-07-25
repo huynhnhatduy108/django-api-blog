@@ -1,5 +1,3 @@
-from urllib import request
-from django.shortcuts import render
 from api.base.base_views import BaseAuthenticationView, BaseView
 from api.base.serializers import ExceptionResponseSerializer
 from api.functions.function import get_value_list
@@ -8,7 +6,7 @@ from api.v1.post_comment.serializers import CommentSerializer
 from models.post.models import Post, PostComment
 from rest_framework import status
 from rest_framework.response import Response
-from django.db.models import F, OuterRef, Value, CharField, Subquery, Count, Q
+from django.db.models import F
 from drf_spectacular.utils import extend_schema
 
 # Create your views here.
