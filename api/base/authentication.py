@@ -25,6 +25,7 @@ class TokenAuthentication(BaseAuthentication):
             })
             receive_token = auth[1].decode('utf-8')
             parse_token = self.parse_token(receive_token)
+            print("parse_token", parse_token)
             if not parse_token:
                 raise exceptions.AuthenticationFailed({
                     'error_code': "INVALID_TOKEN",
@@ -45,7 +46,7 @@ class TokenAuthentication(BaseAuthentication):
     @staticmethod
     def parse_token(receive_token):
         try:
-            parse_token =jwt.decode(receive_token,SIMPLE_JWT['SIGNING_KEY'],algorithms=[SIMPLE_JWT['ALGORITHM']])
+            parse_token =jwt.decode(receive_token, SIMPLE_JWT['SIGNING_KEY'], algorithms=[SIMPLE_JWT['ALGORITHM']])
         except:
             return None
         return parse_token
@@ -53,8 +54,8 @@ class TokenAuthentication(BaseAuthentication):
     @staticmethod
     def check_user_and_token(objects_token, receive_token):
         try:
-            user = User.objects.filter(id=objects_token["user_id"]).values("id","username","full_name", "email", "address","role", "avatar_url", "refresh_token", "access_token").first()
-            if not user or user['access_token']!=receive_token:
+            user = User.objects.filter(id=objects_token["user_id"]).first()
+            if not user or user.access_token != receive_token:
                 return None, "INVALID_TOKEN"
         except Exception:
             return None, "INVALID_TOKEN"

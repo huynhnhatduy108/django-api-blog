@@ -1,4 +1,7 @@
 
+from unittest.mock import DEFAULT
+
+
 ADMIN_ROLE = 1
 USER_ROLE = 0 
 OTHER_ROLE = 2
@@ -13,3 +16,5 @@ TAG = "TAG"
 FACEBOOK_PROVIDER = "FACEBOOK"
 GOOGLE_PROVIDER = "GOOGLE"
 USER_PROVIDER = "USER"
+
+DEFAULT_AVATAR = "https://res.cloudinary.com/nhat-duy/image/upload/v1658724925/img/lm8jabnkqwkcczhfo0wf.png"

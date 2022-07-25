@@ -3,7 +3,7 @@ from api.base.serializers import ExceptionResponseSerializer
 from api.functions.authentication import ClassStruct
 from api.functions.function import check_match_password, gen_hash_password
 from api.v1.common.serializers import FacebookSocialAuthSerializer, GoogleSocialAuthSerializer, LoginSerializer, RegisterSerializer, TokenSerializer
-from config.contanst import USER_PROVIDER
+from config.contanst import DEFAULT_AVATAR, USER_PROVIDER
 from models.user.models import User
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
@@ -47,36 +47,31 @@ class CommonView(GenericViewSet):
         username = serializer.validated_data['username']
         password = serializer.validated_data['password']
 
-        user = User.objects.filter(username = username).values("id","username","full_name", "email", "address", "avatar_url", "avatar_provider", "password").first()
+        user = User.objects.filter(username = username).first()
         macth_password = False
         if user:
-            macth_password = check_match_password(password, user["password"])
+            macth_password = check_match_password(password, user.password)
         if not user or not macth_password:
             return Response({"data":None, "mess":"wrong usename or password !", "status":status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)
 
-        user_obj = ClassStruct(**dict(user))
-        token = get_tokens_for_user(user_obj)
-        user["refresh_token"] = token["refresh"]
-        user["access_token"] = token["access"]
-        user["provider"] = USER_PROVIDER
-        
-        user_update = User.objects.filter(username = username).first()
-        user_update.refresh_token = token["refresh"]
-        user_update.access_token = token["access"]
-        user_update.c_provider = USER_PROVIDER
-        user_update.save()
+        token = get_tokens_for_user(user)
+        user.refresh_token = token["refresh"]
+        user.access_token = token["access"]
+        user.c_provider = USER_PROVIDER
+        user.save()
 
         result ={
             "data":{
-                "username":user["username"],
-                "full_name":user["full_name"], 
-                "email":user["email"], 
-                "address":user["address"], 
-                "avatar_url":user["avatar_url"],
-                "avatar_provider":user["avatar_url"],
-                "refresh_token":user["refresh_token"],
-                "access_token":user["access_token"],
-                "provider":user["provider"],
+                "id":user.id,
+                "username":user.username,
+                "full_name":user.full_name, 
+                "email":user.email, 
+                "address":user.address, 
+                "avatar_url":user.avatar_url,
+                "avatar_provider":user.avatar_url,
+                "refresh_token":user.refresh_token,
+                "access_token":user.access_token,
+                "provider":user.c_provider,
             },
             "status":status.HTTP_200_OK,
             "mess":"Login success!",
@@ -110,7 +105,7 @@ class CommonView(GenericViewSet):
         email = serializer.validated_data['email']
         full_name = serializer.validated_data['full_name']
 
-        user = User.objects.create(username = username, email = email, full_name = full_name, password= password)
+        user = User.objects.create(username = username, email = email, full_name = full_name, password= password, avatar_url =DEFAULT_AVATAR)
 
         result ={
             "data":{
@@ -131,7 +126,7 @@ class CommonView(GenericViewSet):
         tags=["AA. Common"],
         description='Log out',
         parameters=None,
-        request= TokenSerializer,
+        # request= ,
         responses={
             status.HTTP_200_OK: None,
             status.HTTP_401_UNAUTHORIZED:ExceptionResponseSerializer,
@@ -141,22 +136,16 @@ class CommonView(GenericViewSet):
             # EXAMPLE_RESPONSE_TASK,
         ]
     )
-    def log_out(self, request):
-        serializer = TokenSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+    def log_out(self, request, use_id):
 
-        token = serializer.validated_data['token']
-        
-        try:
-            parse_token =jwt.decode(token,SIMPLE_JWT['SIGNING_KEY'],algorithms=[SIMPLE_JWT['ALGORITHM']])
-            user = User.objects.filter(pk= parse_token["user_id"]).first()
-            user.refresh_token = None
-            user.access_token = None 
-            user.c_provider = None 
-            user.save()
+        user = User.objects.filter(pk= use_id).first()
+        if not user:
+            return Response({"mess":"user do not exist!", "status": status.HTTP_400_BAD_REQUEST,"data":None}, status=status.HTTP_400_BAD_REQUEST)
 
-        except:
-            return Response({"mess":"Token invalid or expired!", "status": status.HTTP_400_BAD_REQUEST,"data":None}, status=status.HTTP_400_BAD_REQUEST)
+        user.refresh_token = None
+        user.access_token = None 
+        user.c_provider = None 
+        user.save()
     
         result ={
             "data":None,

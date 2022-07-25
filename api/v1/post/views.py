@@ -163,7 +163,7 @@ class PostAuthenticationView(BaseAuthenticationView):
 
         post = Post.objects.create(parent= parent, title = title, slug =slug,
                                     content= content, summary = summary, meta_title= meta_title, 
-                                    author_id = self.user["id"], published_at = published_at, thumbnail = thumbnail)
+                                    author_id = self.user.id, published_at = published_at, thumbnail = thumbnail)
         
         tags = []
         if "tags" in serializer.validated_data:
@@ -292,10 +292,12 @@ class PostAuthenticationView(BaseAuthenticationView):
         post_meta = PostMeta.objects.filter(post_id=pk)
         post_tag = PostTag.objects.filter(post_id=pk)
         post_category = PostCategory.objects.filter(post_id=pk)
+        post_category = PostComment.objects.filter(post_id=pk)
+
         post_meta.delete()
         post_tag.delete()
         post_category.delete()
-
+        post_category.delete()
         post.delete()  
 
         result = {"mess": "Delete Post success!","data":None}
