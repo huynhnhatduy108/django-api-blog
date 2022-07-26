@@ -286,11 +286,13 @@ class PostAuthenticationView(BaseAuthenticationView):
         post_meta = PostMeta.objects.filter(post_id=pk)
         post_tag = PostTag.objects.filter(post_id=pk)
         post_category = PostCategory.objects.filter(post_id=pk)
-        post_category = PostComment.objects.filter(post_id=pk)
-
+        comments_parent = PostComment.objects.filter(post_id = pk, parent_id__isnull=True)
+        comments_child = PostComment.objects.filter(post_id = pk, parent_id__isnull=False)
+        
+        comments_child.delete()
+        comments_parent.delete()
         post_meta.delete()
         post_tag.delete()
-        post_category.delete()
         post_category.delete()
         post.delete()  
 
