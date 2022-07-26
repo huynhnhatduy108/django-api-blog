@@ -25,11 +25,10 @@ class TokenAuthentication(BaseAuthentication):
             })
             receive_token = auth[1].decode('utf-8')
             parse_token = self.parse_token(receive_token)
-            print("parse_token", parse_token)
             if not parse_token:
                 raise exceptions.AuthenticationFailed({
-                    'error_code': "INVALID_TOKEN",
-                    'description': "INVALID_TOKEN"
+                    'error_code': "INVALID_TOKEN_OR_EXPIRE",
+                    'description': "INVALID_TOKEN_OR_EXPIRE"
                 })
 
             user, err = self.check_user_and_token(parse_token, receive_token)
@@ -56,9 +55,9 @@ class TokenAuthentication(BaseAuthentication):
         try:
             user = User.objects.filter(id=objects_token["user_id"]).first()
             if not user or user.access_token != receive_token:
-                return None, "INVALID_TOKEN"
+                return None, "INVALID_TOKEN_OR_EXPIRE"
         except Exception:
-            return None, "INVALID_TOKEN"
+            return None, "INVALID_TOKEN_OR_EXPIRE"
         return user, None
 
 
