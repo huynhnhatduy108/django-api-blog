@@ -14,7 +14,7 @@ from pathlib import Path
 from datetime import timedelta
 from config.root_local import SIMPLE_JWT_KEY
 # import django_heroku
-import dj_database_url
+# import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -52,7 +52,7 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "drf_spectacular",
     "bcrypt",
-    "django_heroku",
+    # "django_heroku",
 ]
 
 LOCAL_APPS = [
@@ -235,8 +235,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 # django_heroku.settings(locals())
 
-db_from_env = dj_database_url.config()
-DATABASES['default'].update(db_from_env)
+# db_from_env = dj_database_url.config()
+# DATABASES['default'].update(db_from_env)
 
 
 
