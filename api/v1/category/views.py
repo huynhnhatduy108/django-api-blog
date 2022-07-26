@@ -1,6 +1,6 @@
 from api.base.base_views import BaseAuthenticationView, BaseView
 from api.base.serializers import ExceptionResponseSerializer
-from api.functions.function import gen_random_string, gen_slug
+from api.functions.function import gen_slug
 from api.v1.category.schemas import PARAMETER_SEARCH_CATEGORY
 from api.v1.category.serializers import CreateCategorySerializer, SearchCategorySerializer, UpdateCategorySerializer
 from models.category.models import Category

@@ -1,4 +1,3 @@
-from turtle import title
 from models.post.models import PostComment
 from rest_framework import serializers
 

@@ -1,6 +1,4 @@
-from api.base.base_views import BaseAuthenticationView
 from api.base.serializers import ExceptionResponseSerializer
-from api.functions.authentication import ClassStruct
 from api.functions.function import check_match_password, gen_hash_password
 from api.v1.common.serializers import FacebookSocialAuthSerializer, GoogleSocialAuthSerializer, LoginSerializer, RegisterSerializer, TokenSerializer
 from config.contanst import DEFAULT_AVATAR, USER_PROVIDER

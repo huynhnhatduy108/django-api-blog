@@ -1,4 +1,4 @@
-from api.v1.post import views
+from . import views
 from django.urls import path
 from config.contanst import ADMIN_ROLE, POST, USER_ROLE 
 

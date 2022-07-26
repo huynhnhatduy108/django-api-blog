@@ -1,4 +1,3 @@
-from api.base.authentication import TokenAuthentication
 from api.base.response import CustomAPIException
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser

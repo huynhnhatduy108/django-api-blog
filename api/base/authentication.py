@@ -1,4 +1,3 @@
-from lib2to3.pgen2 import token
 from models.user.models import User
 from rest_framework.authentication import BaseAuthentication, get_authorization_header
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
@@ -8,8 +7,6 @@ import jwt
 import facebook
 from google.auth.transport import requests
 from google.oauth2 import id_token
-from rest_framework.response import Response
-from rest_framework import status
 
 class TokenAuthentication(BaseAuthentication):
     keyword = 'Bearer'
