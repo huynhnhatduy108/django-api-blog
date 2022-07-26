@@ -1,15 +1,14 @@
 from api.base.base_views import BaseAuthenticationView, BaseView
 from api.base.serializers import ExceptionResponseSerializer
-from api.functions.function import gen_random_string, gen_slug
+from api.functions.function import gen_slug
 from api.v1.tag.schemas import PARAMETER_SEARCH_TAG
 from api.v1.tag.serializers import CreateTagSerializer, SearchTagSerializer, UpdateTagSerializer
 from models.post.models import PostTag
 from models.tag.models import Tag
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
-from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
-from django.db.models import F, OuterRef, Value, CharField, Subquery, Count, Q
+from django.db.models import F, OuterRef, Subquery, Count, Q
 
 class TagView(BaseView):   
     @extend_schema(

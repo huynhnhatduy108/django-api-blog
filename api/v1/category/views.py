@@ -6,9 +6,8 @@ from api.v1.category.serializers import CreateCategorySerializer, SearchCategory
 from models.category.models import Category
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
-from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
-from django.db.models import F, OuterRef, Value, CharField, Subquery, Count, Q
+from django.db.models import Q
 
 class CategoryView(BaseView):   
     @extend_schema(

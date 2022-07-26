@@ -4,9 +4,8 @@ from api.functions.function import gen_hash_password
 from api.v1.user.schemas import PARAMETER_SEARCH_USER
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
-from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
-from django.db.models import F, OuterRef, Value, CharField, Subquery, Count, Q
+from django.db.models import Q
 from models.user.models import User
 from api.v1.user.serializers import CreateUserSerializer, SearchUserSerializer, UpdateAvatarUserSerializer, UpdateUserSerializer
 
