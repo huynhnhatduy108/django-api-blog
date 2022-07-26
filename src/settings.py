@@ -52,6 +52,7 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "drf_spectacular",
     "bcrypt",
+    "django_heroku",
 ]
 
 LOCAL_APPS = [
@@ -236,6 +237,8 @@ django_heroku.settings(locals())
 
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
