@@ -13,9 +13,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from config.root_local import SIMPLE_JWT_KEY
-import django_heroku
 import dj_database_url
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -52,7 +50,6 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "drf_spectacular",
     "bcrypt",
-    "django_heroku",
 ]
 
 LOCAL_APPS = [
@@ -159,7 +156,7 @@ ROOT_URLCONF = 'src.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -192,6 +189,9 @@ DATABASES = {
     #     'PORT': '5432',
     # }
 }
+
+db_from_env = dj_database_url.config()
+DATABASES['default'].update(db_from_env)
 
 CORS_URLS_REGEX = r"^/api/.*$"
 
@@ -233,10 +233,6 @@ USE_TZ = True
 # STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
-django_heroku.settings(locals())
-
-db_from_env = dj_database_url.config()
-DATABASES['default'].update(db_from_env)
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -247,4 +243,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
+STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
+
+
