@@ -17,4 +17,4 @@ FACEBOOK_PROVIDER = "FACEBOOK"
 GOOGLE_PROVIDER = "GOOGLE"
 USER_PROVIDER = "USER"
 
-DEFAULT_AVATAR = "https://res.cloudinary.com/nhat-duy/image/upload/v1658724925/img/lm8jabnkqwkcczhfo0wf.png"
+DEFAULT_AVATAR = "https://res.cloudinary.com/nhat-duy/image/upload/v1699412601/img/x1ihwbrd4couaakietiz.jpg"
