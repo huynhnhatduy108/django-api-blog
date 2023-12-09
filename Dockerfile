@@ -16,8 +16,8 @@ COPY . .
 
 EXPOSE 8000
 
-# python manage.py makemigrations models
-# python manage.py migrate
+# docker exec -it 2321e4656f49 python manage.py makemigrations models
+#sudo docker exec -it  2321e4656f49 python manage.py migrate
 # python manage.py runserver 0.0.0.0:8000
 
 
